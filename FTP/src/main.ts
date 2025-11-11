@@ -11,10 +11,13 @@ import { ASSETS } from './assets';
 // NOTE: Removed bulk Assets.add(ASSETS) due to runtime error inside Pixi's resolver (undefined startsWith).
 // We'll load each asset directly with an explicit { src, alias } object to bypass the failing code path.
 
-const app = new Application({ backgroundColor: 0x000000, resizeTo: window });
-(document.getElementById('app') as HTMLElement).appendChild(app.view as HTMLCanvasElement);
-app.view.style.width = '100%';
-app.view.style.height = '100%';
+// PixiJS v8: use async init instead of passing options to constructor; use app.canvas not app.view
+const app = new Application();
+await app.init({ background: '#000000', resizeTo: window });
+const mount = document.getElementById('app') as HTMLElement;
+mount.appendChild(app.canvas);
+app.canvas.style.width = '100%';
+app.canvas.style.height = '100%';
 
 const loadingEl = document.getElementById('loading');
 
