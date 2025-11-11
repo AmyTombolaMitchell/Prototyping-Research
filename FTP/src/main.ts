@@ -8,9 +8,8 @@ import { WheelSpinScene } from './scenes/WheelSpinScene';
 import { FinishSequenceScene } from './scenes/FinishSequenceScene';
 import { ASSETS } from './assets';
 
-// Pre-register asset URLs with Pixi Assets system
-// Register all assets in one call (PixiJS v8 expects an object map)
-Assets.add(ASSETS);
+// NOTE: Removed bulk Assets.add(ASSETS) due to runtime error inside Pixi's resolver (undefined startsWith).
+// We'll load each asset directly with an explicit { src, alias } object to bypass the failing code path.
 
 const app = new Application({ backgroundColor: 0x000000, resizeTo: window });
 (document.getElementById('app') as HTMLElement).appendChild(app.view as HTMLCanvasElement);
@@ -44,13 +43,9 @@ async function preload() {
       failed.push(`${key}:fetch-error`);
       continue;
     }
-
-    // Attempt alias load first; fallback to direct src load if alias fails.
+    // Direct load providing src & alias; avoids resolver path that triggered undefined error.
     try {
-      await Assets.load(key).catch(async (aliasErr) => {
-        console.warn('[preload] alias load failed, retry with direct src', key, aliasErr);
-        await Assets.load({ src: url, alias: key });
-      });
+      await Assets.load({ src: url, alias: key });
       loaded++;
       if (loadingEl) loadingEl.textContent = `Loading assets... ${loaded}/${entries.length}`;
     } catch (assetErr) {
