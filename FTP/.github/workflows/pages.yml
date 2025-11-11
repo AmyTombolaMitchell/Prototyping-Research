@@ -35,6 +35,12 @@ jobs:
         run: npm run build
         working-directory: FTP
 
+      - name: Copy image assets
+        run: |
+          mkdir -p dist/assets
+          cp assets/*.png dist/assets/
+        working-directory: FTP
+
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
