@@ -25,22 +25,44 @@ let currentStep: number = 0;
 
 async function preload() {
   if (!loadingEl) return;
-  const keys = Object.keys(ASSETS);
+  const entries = Object.entries(ASSETS);
   let loaded = 0;
+  const failed: string[] = [];
   console.time('asset-preload');
-  for (const k of keys) {
+  for (const [key, url] of entries) {
+    // First probe the raw URL to surface HTTP status early.
     try {
-      console.log('[preload] loading', k, ASSETS[k as keyof typeof ASSETS]);
-      await Assets.load(k);
+      console.log('[preload] probe fetch', key, url);
+      const resp = await fetch(url, { cache: 'no-store' });
+      console.log('[preload] fetch status', key, resp.status, url);
+      if (!resp.ok) {
+        failed.push(`${key}:http-${resp.status}`);
+        continue; // Skip attempting to load via Assets if HTTP failed.
+      }
+    } catch (fetchErr) {
+      console.error('[preload] fetch error', key, fetchErr);
+      failed.push(`${key}:fetch-error`);
+      continue;
+    }
+
+    // Attempt alias load first; fallback to direct src load if alias fails.
+    try {
+      await Assets.load(key).catch(async (aliasErr) => {
+        console.warn('[preload] alias load failed, retry with direct src', key, aliasErr);
+        await Assets.load({ src: url, alias: key });
+      });
       loaded++;
-      if (loadingEl) loadingEl.textContent = `Loading assets... ${loaded}/${keys.length}`;
-    } catch (e) {
-      console.error('Failed to load asset', k, e);
-      if (loadingEl) loadingEl.textContent = `Error loading ${k}`;
-      return; // abort start on failure
+      if (loadingEl) loadingEl.textContent = `Loading assets... ${loaded}/${entries.length}`;
+    } catch (assetErr) {
+      console.error('[preload] asset load error', key, assetErr);
+      failed.push(`${key}:asset-error`);
     }
   }
   console.timeEnd('asset-preload');
+  if (failed.length) {
+    if (loadingEl) loadingEl.textContent = `Asset errors: ${failed.join(', ')}`;
+    console.error('[preload] failures', failed);
+  }
 }
 
 async function start() {
