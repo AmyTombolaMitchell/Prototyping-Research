@@ -21,7 +21,12 @@ export const ASSETS = {
   INTRO_6: 'assets/PAGE 1/6.png',
   INTRO_7: 'assets/PAGE 1/7.png',
   INTRO_8: 'assets/PAGE 1/8.png',
-  INTRO_9: 'assets/PAGE 1/9.png'
+  INTRO_9: 'assets/PAGE 1/9.png',
+  // PAGE 2 assets for second intro scene
+  INTRO2_BG: 'assets/PAGE 2/BACKGROUND2.png',
+  INTRO2_1: 'assets/PAGE 2/1.png',
+  INTRO2_2: 'assets/PAGE 2/2.png',
+  INTRO2_3: 'assets/PAGE 2/3.png'
 } as const;
 
 export type AssetKey = keyof typeof ASSETS;
