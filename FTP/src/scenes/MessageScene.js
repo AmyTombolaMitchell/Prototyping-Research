@@ -155,6 +155,11 @@ export class MessageScene {
         if (this.isTransitioning)
             return; // Prevent double-transition
         this.isTransitioning = true;
+        // Disable all clickable elements immediately
+        this.clickableElements.forEach(el => {
+            el.eventMode = 'none';
+            el.cursor = 'default';
+        });
         console.log('[MessageScene] Transitioning to Thank You page...');
         const sceneManager = window.sceneManager;
         if (sceneManager) {

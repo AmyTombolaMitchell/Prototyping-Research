@@ -221,6 +221,9 @@ export class IntroScene {
                     if (this.isTransitioning)
                         return; // Prevent double-click
                     this.isTransitioning = true;
+                    // Disable button immediately
+                    sprite.eventMode = 'none';
+                    sprite.cursor = 'default';
                     console.log('[IntroScene] Asset 6 clicked! Transitioning to PAGE 2...');
                     const sceneManager = window.sceneManager;
                     if (sceneManager) {

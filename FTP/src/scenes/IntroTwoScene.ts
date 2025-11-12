@@ -117,6 +117,10 @@ export class IntroTwoScene implements IScene {
         if (this.isTransitioning) return; // Prevent double-click
         this.isTransitioning = true;
         
+        // Disable button immediately
+        sprite.eventMode = 'none';
+        sprite.cursor = 'default';
+        
         console.log('[IntroTwoScene] Roll button clicked! Transitioning to PAGE 3...');
         const sceneManager = (window as any).sceneManager;
         if (sceneManager) {

@@ -59,6 +59,18 @@ console.log('[INIT] Starting application...');
     }, 100);
     window.addEventListener('resize', scaleCanvas);
     const loadingEl = document.getElementById('loading');
+    const loadingText = document.getElementById('loadingText');
+    const progressBar = document.getElementById('progressBar');
+    function updateProgress(current, total, message) {
+        const percent = Math.round((current / total) * 100);
+        if (progressBar) {
+            progressBar.style.width = `${percent}%`;
+            progressBar.textContent = `${percent}%`;
+        }
+        if (loadingText) {
+            loadingText.textContent = message;
+        }
+    }
     const sceneManager = new SceneManager(app.stage);
     // Make sceneManager globally accessible for scene transitions
     window.sceneManager = sceneManager;
@@ -76,6 +88,8 @@ console.log('[INIT] Starting application...');
             'PAGE4_WHEEL', 'PAGE4_WHEELBACKGROUND', 'PAGE4_COINS', 'PAGE4_TOP_BANNER_AFTER',
             'PAGE5_1', 'PAGE5_2', 'PAGE5_3', 'PAGE5_4', 'PAGE5_5'
         ];
+        const totalSteps = assetsToLoad.length + 2; // assets + scene init + scene change
+        let currentProgress = 0;
         let loaded = 0;
         const failed = [];
         console.time('asset-preload');
@@ -89,8 +103,8 @@ console.log('[INIT] Starting application...');
                 console.log('[preload] loading', key, url);
                 await Assets.load({ src: url, alias: key });
                 loaded++;
-                if (loadingEl)
-                    loadingEl.textContent = `Loading assets... ${loaded}/${assetsToLoad.length}`;
+                currentProgress++;
+                updateProgress(currentProgress, totalSteps, `Loading assets... ${loaded}/${assetsToLoad.length}`);
             }
             catch (assetErr) {
                 console.error('[preload] asset load error', key, assetErr);
@@ -99,28 +113,36 @@ console.log('[INIT] Starting application...');
         }
         console.timeEnd('asset-preload');
         if (failed.length) {
-            if (loadingEl)
-                loadingEl.textContent = `Asset errors: ${failed.join(', ')}`;
+            updateProgress(totalSteps, totalSteps, `Asset errors: ${failed.join(', ')}`);
             console.error('[preload] failures', failed);
         }
         else {
             console.log('[preload] All assets loaded successfully!');
         }
+        return { totalSteps, currentProgress };
     }
     async function start() {
         console.log('[START] Beginning preload');
-        await preload();
-        if (loadingEl)
-            loadingEl.remove();
-        console.log('[START] Creating IntroScene');
-        const introScene = new IntroScene();
-        console.log('[START] Manually testing init...');
-        await introScene.init();
-        console.log('[START] Manual init complete');
-        console.log('[START] Changing to IntroScene');
-        await sceneManager.change(introScene);
-        console.log('[START] IntroScene loaded, starting ticker');
-        app.ticker.add(() => update());
+        const progress = await preload();
+        if (progress) {
+            const { totalSteps, currentProgress } = progress;
+            // Update progress for scene initialization
+            updateProgress(currentProgress + 1, totalSteps, 'Initializing scene...');
+            console.log('[START] Creating IntroScene');
+            const introScene = new IntroScene();
+            console.log('[START] Manually testing init...');
+            await introScene.init();
+            console.log('[START] Manual init complete');
+            // Update progress for scene change
+            updateProgress(currentProgress + 2, totalSteps, 'Loading game...');
+            console.log('[START] Changing to IntroScene');
+            await sceneManager.change(introScene);
+            console.log('[START] IntroScene loaded, starting ticker');
+            // Remove loading screen
+            if (loadingEl)
+                loadingEl.remove();
+            app.ticker.add(() => update());
+        }
     }
     // Removed old immediate start; now using preloader
     async function update() {
