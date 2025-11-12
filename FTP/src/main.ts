@@ -27,6 +27,14 @@ await app.init({
 
 console.log('[APP] Application initialized');
 
+// Initialize Assets with basePath for GitHub Pages
+// In production, this ensures assets load from the correct subdirectory
+const basePath = (import.meta as any).env?.BASE_URL || '/';
+console.log('[APP] Initializing Assets with basePath:', basePath);
+await Assets.init({
+  basePath: basePath
+});
+
 const mount = document.getElementById('app') as HTMLElement;
 if (!mount) {
   console.error('[APP] Could not find #app element!');
