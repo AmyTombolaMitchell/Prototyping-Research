@@ -29,7 +29,7 @@ console.log('[APP] Application initialized');
 
 // Initialize Assets with basePath for GitHub Pages
 // In production, this ensures assets load from the correct subdirectory
-const basePath = (import.meta as any).env?.BASE_URL || '/';
+const basePath = '/Prototyping-Research/';
 console.log('[APP] Initializing Assets with basePath:', basePath);
 await Assets.init({
   basePath: basePath
