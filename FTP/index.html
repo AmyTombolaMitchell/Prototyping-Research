@@ -33,6 +33,11 @@
       top: 50%;
       left: 50%;
       transform-origin: center center;
+      opacity: 0;
+      transition: opacity 0.3s ease-in;
+    }
+    #app canvas.ready {
+      opacity: 1;
     }
     .loading {
       position: absolute;

@@ -184,14 +184,16 @@ async function start() {
       });
     }));
     
-    // Fade out loading screen
+    // First, fade out the loading screen completely
     if (loadingEl) {
       loadingEl.classList.add('fade-out');
-      // Remove after fade completes
-      setTimeout(() => {
-        loadingEl.remove();
-      }, 300);
+      // Wait for fade to complete
+      await new Promise(resolve => setTimeout(resolve, 300));
+      loadingEl.remove();
     }
+    
+    // Then fade in the canvas
+    app.canvas.classList.add('ready');
   }
 }
 
