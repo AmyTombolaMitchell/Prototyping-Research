@@ -139,11 +139,20 @@ console.log('[INIT] Starting application...');
             await sceneManager.change(introScene);
             console.log('[START] IntroScene loaded, starting ticker');
             app.ticker.add(() => update());
-            // Wait a frame to ensure scene is rendered before removing loading screen
-            await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
-            // Remove loading screen
-            if (loadingEl)
-                loadingEl.remove();
+            // Wait for multiple frames to ensure scene is fully rendered
+            await new Promise(resolve => requestAnimationFrame(() => {
+                requestAnimationFrame(() => {
+                    requestAnimationFrame(() => resolve(undefined));
+                });
+            }));
+            // Fade out loading screen
+            if (loadingEl) {
+                loadingEl.classList.add('fade-out');
+                // Remove after fade completes
+                setTimeout(() => {
+                    loadingEl.remove();
+                }, 300);
+            }
         }
     }
     // Removed old immediate start; now using preloader
