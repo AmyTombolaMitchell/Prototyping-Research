@@ -175,10 +175,13 @@ async function start() {
     await sceneManager.change(introScene);
     console.log('[START] IntroScene loaded, starting ticker');
     
+    app.ticker.add(() => update());
+    
+    // Wait a frame to ensure scene is rendered before removing loading screen
+    await new Promise(resolve => requestAnimationFrame(() => resolve(undefined)));
+    
     // Remove loading screen
     if (loadingEl) loadingEl.remove();
-    
-    app.ticker.add(() => update());
   }
 }
 
