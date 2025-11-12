@@ -217,15 +217,15 @@ export class MessageScene {
         }
     }
     async popIn(sprite, targetScale = 1) {
-        const duration = 20;
+        const duration = 333; // milliseconds (was 20 frames, now 333ms for consistent speed)
+        const startTime = Date.now();
         return new Promise((resolve) => {
-            let frame = 0;
             const animate = () => {
-                frame++;
-                const progress = frame / duration;
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(1, elapsed / duration);
                 sprite.alpha = Math.min(1, progress * 2);
                 sprite.scale.set(Math.min(targetScale, progress * 1.5 * targetScale));
-                if (frame < duration) {
+                if (progress < 1) {
                     requestAnimationFrame(animate);
                 }
                 else {
@@ -241,17 +241,17 @@ export class MessageScene {
         const message = this.messages[index];
         if (!message)
             return;
-        const duration = 20;
+        const duration = 333; // milliseconds (was 20 frames, now 333ms for consistent speed)
+        const startTime = Date.now();
         const startY = message.y;
         const targetY = startY - spacing; // Bump up by spacing amount
         return new Promise((resolve) => {
-            let frame = 0;
             const animate = () => {
-                frame++;
-                const progress = frame / duration;
+                const elapsed = Date.now() - startTime;
+                const progress = Math.min(1, elapsed / duration);
                 message.y = startY + (targetY - startY) * progress;
                 message.alpha = 1 - (progress * 0.5); // Fade to 50% opacity
-                if (frame < duration) {
+                if (progress < 1) {
                     requestAnimationFrame(animate);
                 }
                 else {

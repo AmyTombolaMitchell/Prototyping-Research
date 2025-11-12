@@ -103,13 +103,13 @@ export class DiceRollScene implements IScene {
     const target = this.pathPositions[positionIndex];
     const startX = this.avatar.x;
     const startY = this.avatar.y;
-    const duration = 45; // 50% slower - was 30 frames, now 45 frames
+    const duration = 750; // milliseconds (was 45 frames, now 750ms)
+    const startTime = Date.now();
     
     return new Promise<void>((resolve) => {
-      let frame = 0;
       const animate = () => {
-        frame++;
-        const progress = frame / duration;
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(1, elapsed / duration);
         
         // Ease out cubic for smooth landing
         const easeProgress = 1 - Math.pow(1 - progress, 3);
@@ -123,7 +123,7 @@ export class DiceRollScene implements IScene {
         const arc = Math.sin(progress * Math.PI) * jumpHeight;
         this.avatar!.y -= arc;
         
-        if (frame < duration) {
+        if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
           // Ensure final position is exact
@@ -225,27 +225,27 @@ export class DiceRollScene implements IScene {
     this.container.addChild(dice);
     this.layeredSprites.push(dice);
     
-    // Rolling animation - spin and bounce (75% slower total)
-    let frame = 0;
-    const rollDuration = 270; // 75% slower - was 180 frames, now 270 frames (50% slower than current)
+    // Rolling animation - spin and bounce
+    const rollDuration = 4500; // milliseconds (was 270 frames, now 4.5 seconds)
+    const startTime = Date.now();
     
     return new Promise<void>((resolve) => {
       const animate = () => {
-        frame++;
-        const progress = frame / rollDuration;
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(1, elapsed / rollDuration);
         
         // Spin the dice (slower rotation)
-        dice.rotation = frame * 0.2; // Slower - was 0.3, now 0.2
+        dice.rotation = (elapsed / 1000) * 3; // 3 radians per second
         
         // Bounce effect (slower)
-        const bounce = Math.abs(Math.sin(frame * 0.133)) * 50; // Slower - was 0.2, now 0.133
+        const bounce = Math.abs(Math.sin((elapsed / 1000) * 4)) * 50; // 4 bounces per second
         dice.y = (this.canvasHeight - 260) - bounce;
         
         // Scale pulsing (slower)
-        const scale = 0.6 + Math.sin(frame * 0.1) * 0.15; // Slower - was 0.15, now 0.1
+        const scale = 0.6 + Math.sin((elapsed / 1000) * 3) * 0.15; // 3 pulses per second
         dice.scale.set(scale);
         
-        if (frame < rollDuration) {
+        if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
           // Settle the dice - just leave it as is, no number overlay

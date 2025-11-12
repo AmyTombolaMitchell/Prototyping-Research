@@ -125,15 +125,15 @@ export class WheelSpinScene implements IScene {
     
     const originalScale = 1.0;
     const targetScale = 1.15; // Grow 15% bigger
-    const duration = 60; // ~1 second
+    const duration = 1000; // milliseconds (was 60 frames, now 1000ms)
+    const startTime = Date.now();
     
     return new Promise<void>((resolve) => {
-      let frame = 0;
       const animate = () => {
         if (!this.wheel) return;
         
-        frame++;
-        const progress = frame / duration;
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(1, elapsed / duration);
         
         // Ease in-out for smooth growth
         const easeProgress = progress < 0.5
@@ -144,7 +144,7 @@ export class WheelSpinScene implements IScene {
         const scale = originalScale + (targetScale - originalScale) * easeProgress;
         this.wheel.scale.set(scale);
         
-        if (frame < duration) {
+        if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
           this.wheel.scale.set(targetScale);
@@ -166,39 +166,40 @@ export class WheelSpinScene implements IScene {
     const totalRotation = (fullSpins * Math.PI * 2) + targetRotation;
     
     // Multi-phase animation: slow start, moderate middle, very slow ticking end
-    const warmUpDuration = 180; // ~3 seconds to slowly speed up
-    const steadySpinDuration = 420; // ~7 seconds of steady moderate spinning
-    const slowDownDuration = 900; // ~15 seconds to slow down very gradually with ticking effect
+    const warmUpDuration = 3000; // 3 seconds to slowly speed up
+    const steadySpinDuration = 7000; // 7 seconds of steady moderate spinning
+    const slowDownDuration = 15000; // 15 seconds to slow down very gradually with ticking effect
     const totalDuration = warmUpDuration + steadySpinDuration + slowDownDuration;
+    const startTime = Date.now();
     
     return new Promise<void>((resolve) => {
-      let frame = 0;
       const animate = () => {
         if (!this.wheel) return;
         
-        frame++;
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(1, elapsed / totalDuration);
         let rotationProgress = 0;
         
-        if (frame <= warmUpDuration) {
+        if (elapsed <= warmUpDuration) {
           // Phase 1: Slow start - speed up gradually (ease in cubic)
-          const progress = frame / warmUpDuration;
-          const easeIn = progress * progress * progress; // Cubic for slower start
+          const phaseProgress = elapsed / warmUpDuration;
+          const easeIn = phaseProgress * phaseProgress * phaseProgress; // Cubic for slower start
           rotationProgress = easeIn * 0.1; // Only 10% of total rotation during warmup (2 spins)
-        } else if (frame <= warmUpDuration + steadySpinDuration) {
+        } else if (elapsed <= warmUpDuration + steadySpinDuration) {
           // Phase 2: Steady moderate spin
-          const progress = (frame - warmUpDuration) / steadySpinDuration;
-          rotationProgress = 0.1 + (progress * 0.6); // 60% during steady spin (12 spins, total 70%)
+          const phaseProgress = (elapsed - warmUpDuration) / steadySpinDuration;
+          rotationProgress = 0.1 + (phaseProgress * 0.6); // 60% during steady spin (12 spins, total 70%)
         } else {
           // Phase 3: Slow down with same gradual speed as warmup (ease out cubic)
-          const progress = (frame - warmUpDuration - steadySpinDuration) / slowDownDuration;
-          const easeOut = 1 - Math.pow(1 - progress, 3); // Cubic for same gradual speed as start
+          const phaseProgress = (elapsed - warmUpDuration - steadySpinDuration) / slowDownDuration;
+          const easeOut = 1 - Math.pow(1 - phaseProgress, 3); // Cubic for same gradual speed as start
           rotationProgress = 0.7 + (easeOut * 0.3); // Final 30% during slowdown (6 spins over 15 seconds)
         }
         
         // Apply rotation
         this.wheel.rotation = totalRotation * rotationProgress;
         
-        if (frame < totalDuration) {
+        if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
           // Ensure final rotation is exact
@@ -213,13 +214,13 @@ export class WheelSpinScene implements IScene {
   
   private async hideWheel() {
     // Fade out and hide the wheel and wheel background
-    const duration = 30; // ~0.5 seconds
+    const duration = 500; // milliseconds (was 30 frames, now 500ms)
+    const startTime = Date.now();
     
     return new Promise<void>((resolve) => {
-      let frame = 0;
       const animate = () => {
-        frame++;
-        const progress = frame / duration;
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(1, elapsed / duration);
         
         // Fade out
         const alpha = 1 - progress;
@@ -227,7 +228,7 @@ export class WheelSpinScene implements IScene {
         if (this.wheel) this.wheel.alpha = alpha;
         if (this.wheelBackground) this.wheelBackground.alpha = alpha;
         
-        if (frame < duration) {
+        if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
           // Make completely invisible
@@ -306,13 +307,13 @@ export class WheelSpinScene implements IScene {
   }
   
   private async popIn(sprite: Sprite | Text) {
-    const duration = 30; // ~0.5 seconds
+    const duration = 500; // milliseconds (was 30 frames, now 500ms)
+    const startTime = Date.now();
     
     return new Promise<void>((resolve) => {
-      let frame = 0;
       const animate = () => {
-        frame++;
-        const progress = frame / duration;
+        const elapsed = Date.now() - startTime;
+        const progress = Math.min(1, elapsed / duration);
         
         // Bounce effect with scale and alpha
         const bounce = Math.sin(progress * Math.PI);
@@ -322,7 +323,7 @@ export class WheelSpinScene implements IScene {
         sprite.scale.set(scale);
         sprite.alpha = alpha;
         
-        if (frame < duration) {
+        if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
           sprite.scale.set(1);
