@@ -14,26 +14,32 @@ import { ASSETS } from './assets';
 // NOTE: Removed bulk Assets.add(ASSETS) due to runtime error inside Pixi's resolver (undefined startsWith).
 // We'll load each asset directly with an explicit { src, alias } object to bypass the failing code path.
 
-// PixiJS v8: use async init instead of passing options to constructor; use app.canvas not app.view
-const app = new Application();
-// Set canvas to match the updated asset dimensions (572x1247 - portrait format)
-await app.init({ 
-  background: '#000000', 
-  width: 572,
-  height: 1247,
-  resolution: 1,
-  autoDensity: false
-});
+console.log('[INIT] Starting application...');
 
-console.log('[APP] Application initialized');
+// Wrap everything in an async IIFE to handle top-level await
+(async () => {
+  console.log('[INIT] Creating PixiJS application...');
+  
+  // PixiJS v8: use async init instead of passing options to constructor; use app.canvas not app.view
+  const app = new Application();
+  // Set canvas to match the updated asset dimensions (572x1247 - portrait format)
+  await app.init({ 
+    background: '#000000', 
+    width: 572,
+    height: 1247,
+    resolution: 1,
+    autoDensity: false
+  });
 
-// Initialize Assets with basePath for GitHub Pages
-// In production, this ensures assets load from the correct subdirectory
-const basePath = '/Prototyping-Research/';
-console.log('[APP] Initializing Assets with basePath:', basePath);
-await Assets.init({
-  basePath: basePath
-});
+  console.log('[APP] Application initialized');
+
+  // Initialize Assets with basePath for GitHub Pages
+  // In production, this ensures assets load from the correct subdirectory
+  const basePath = '/Prototyping-Research/';
+  console.log('[APP] Initializing Assets with basePath:', basePath);
+  await Assets.init({
+    basePath: basePath
+  });
 
 const mount = document.getElementById('app') as HTMLElement;
 if (!mount) {
@@ -198,3 +204,11 @@ async function update() {
 }
 
 start();
+
+})().catch(err => {
+  console.error('[INIT] Fatal error:', err);
+  const loadingEl = document.getElementById('loading');
+  if (loadingEl) {
+    loadingEl.textContent = `Error: ${err.message}`;
+  }
+});
