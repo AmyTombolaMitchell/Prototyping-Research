@@ -78,14 +78,14 @@ export class MessageScene implements IScene {
   private async showMessageSequence() {
     // Asset 1 - appears in the middle
     await this.showMessage('PAGE5_1', this.canvasWidth / 2, this.canvasHeight / 2, 0);
-    await this.wait(1000); // Longer pause
+    await this.wait(600); // Reduced from 1000ms to 600ms
     
     // Bump asset 1 up and fade it
     await this.bumpUpAndFade(0, 150); // More spacing
     
     // Asset 2 - appears in the middle
     await this.showMessage('PAGE5_2', this.canvasWidth / 2, this.canvasHeight / 2, 1);
-    await this.wait(1000); // Longer pause
+    await this.wait(600); // Reduced from 1000ms to 600ms
     
     // Bump asset 1 and 2 up and fade
     await this.bumpUpAndFade(0, 150);
@@ -93,7 +93,7 @@ export class MessageScene implements IScene {
     
     // Asset 3 - appears in the middle
     await this.showMessage('PAGE5_3', this.canvasWidth / 2, this.canvasHeight / 2, 2);
-    await this.wait(1000); // Longer pause
+    await this.wait(600); // Reduced from 1000ms to 600ms
     
     // Assets 4 and 5 appear simultaneously
     const asset5Texture = Assets.get('PAGE5_5');
@@ -204,7 +204,7 @@ export class MessageScene implements IScene {
   }
   
   private async popIn(sprite: Sprite, targetScale: number = 1): Promise<void> {
-    const duration = 333; // milliseconds (was 20 frames, now 333ms for consistent speed)
+    const duration = 250; // milliseconds (reduced from 333ms to 250ms)
     const startTime = Date.now();
     
     return new Promise<void>((resolve) => {
@@ -231,7 +231,7 @@ export class MessageScene implements IScene {
     const message = this.messages[index];
     if (!message) return;
     
-    const duration = 333; // milliseconds (was 20 frames, now 333ms for consistent speed)
+    const duration = 250; // milliseconds (reduced from 333ms to 250ms)
     const startTime = Date.now();
     const startY = message.y;
     const targetY = startY - spacing; // Bump up by spacing amount

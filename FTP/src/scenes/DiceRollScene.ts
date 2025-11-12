@@ -93,7 +93,7 @@ export class DiceRollScene implements IScene {
     // Move through positions 1-5 (skipping 0 which is the starting position)
     for (let i = 1; i < this.pathPositions.length; i++) {
       await this.jumpToPosition(i);
-      await this.wait(450); // 50% slower - was 300ms, now 450ms
+      await this.wait(200); // Reduced from 450ms to 200ms
     }
   }
   
@@ -103,7 +103,7 @@ export class DiceRollScene implements IScene {
     const target = this.pathPositions[positionIndex];
     const startX = this.avatar.x;
     const startY = this.avatar.y;
-    const duration = 750; // milliseconds (was 45 frames, now 750ms)
+    const duration = 400; // milliseconds (reduced from 750ms to 400ms)
     const startTime = Date.now();
     
     return new Promise<void>((resolve) => {
@@ -226,7 +226,7 @@ export class DiceRollScene implements IScene {
     this.layeredSprites.push(dice);
     
     // Rolling animation - spin and bounce
-    const rollDuration = 4500; // milliseconds (was 270 frames, now 4.5 seconds)
+    const rollDuration = 2000; // milliseconds (reduced from 4500ms to 2000ms)
     const startTime = Date.now();
     
     return new Promise<void>((resolve) => {

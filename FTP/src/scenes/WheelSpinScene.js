@@ -173,7 +173,7 @@ export class WheelSpinScene {
             return;
         const originalScale = 1.0;
         const targetScale = 1.15; // Grow 15% bigger
-        const duration = 1000; // milliseconds (was 60 frames, now 1000ms)
+        const duration = 500; // milliseconds (reduced from 1000ms to 500ms)
         const startTime = Date.now();
         return new Promise((resolve) => {
             const animate = () => {
@@ -208,9 +208,9 @@ export class WheelSpinScene {
         const targetRotation = 0; // Land at current position (20 at top)
         const totalRotation = (fullSpins * Math.PI * 2) + targetRotation;
         // Multi-phase animation: slow start, moderate middle, very slow ticking end
-        const warmUpDuration = 3000; // 3 seconds to slowly speed up
-        const steadySpinDuration = 7000; // 7 seconds of steady moderate spinning
-        const slowDownDuration = 15000; // 15 seconds to slow down very gradually with ticking effect
+        const warmUpDuration = 1000; // 1 second to speed up (reduced from 3s)
+        const steadySpinDuration = 2000; // 2 seconds of steady spinning (reduced from 7s)
+        const slowDownDuration = 3000; // 3 seconds to slow down (reduced from 15s)
         const totalDuration = warmUpDuration + steadySpinDuration + slowDownDuration;
         const startTime = Date.now();
         return new Promise((resolve) => {
@@ -254,7 +254,7 @@ export class WheelSpinScene {
     }
     async hideWheel() {
         // Fade out and hide the wheel and wheel background
-        const duration = 500; // milliseconds (was 30 frames, now 500ms)
+        const duration = 300; // milliseconds (reduced from 500ms to 300ms)
         const startTime = Date.now();
         return new Promise((resolve) => {
             const animate = () => {
@@ -339,7 +339,7 @@ export class WheelSpinScene {
         }
     }
     async popIn(sprite) {
-        const duration = 500; // milliseconds (was 30 frames, now 500ms)
+        const duration = 300; // milliseconds (reduced from 500ms to 300ms)
         const startTime = Date.now();
         return new Promise((resolve) => {
             const animate = () => {
