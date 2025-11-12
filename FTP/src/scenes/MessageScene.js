@@ -13,6 +13,12 @@ export class MessageScene {
             writable: true,
             value: false
         });
+        Object.defineProperty(this, "isTransitioning", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: false
+        });
         Object.defineProperty(this, "layeredSprites", {
             enumerable: true,
             configurable: true,
@@ -146,6 +152,9 @@ export class MessageScene {
         this.addClickableAreas();
     }
     async transitionToThankYou() {
+        if (this.isTransitioning)
+            return; // Prevent double-transition
+        this.isTransitioning = true;
         console.log('[MessageScene] Transitioning to Thank You page...');
         const sceneManager = window.sceneManager;
         if (sceneManager) {
@@ -257,8 +266,15 @@ export class MessageScene {
     }
     update() { }
     destroy() {
+        this.layeredSprites.forEach(sprite => {
+            sprite.removeAllListeners();
+        });
+        this.clickableElements.forEach(el => {
+            el.removeAllListeners();
+        });
         for (const s of this.layeredSprites)
             s.destroy();
         this.container.removeChildren();
+        this.container.removeAllListeners();
     }
 }

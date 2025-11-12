@@ -5,6 +5,7 @@ import { ASSETS } from '../assets';
 export class DiceRollScene implements IScene {
   container = new Container();
   private ready = false;
+  private isTransitioning = false;
   private layeredSprites: Sprite[] = [];
   private readonly canvasWidth = 572;
   private readonly canvasHeight = 1247;
@@ -69,6 +70,9 @@ export class DiceRollScene implements IScene {
     
     // Wait 3 seconds then auto-transition to PAGE 4
     await this.wait(3000);
+    
+    if (this.isTransitioning) return; // Prevent double-transition
+    this.isTransitioning = true;
     
     console.log('[DiceRollScene] Auto-transitioning to PAGE 4...');
     const sceneManager = (window as any).sceneManager;
@@ -258,9 +262,13 @@ export class DiceRollScene implements IScene {
   update() {}
   
   destroy() {
+    this.layeredSprites.forEach(sprite => {
+      sprite.removeAllListeners();
+    });
     for (const s of this.layeredSprites) s.destroy();
     for (const el of this.elementsToDestroy) el.destroy();
     this.container.removeChildren();
+    this.container.removeAllListeners();
   }
   
   isReady() { return this.ready; }

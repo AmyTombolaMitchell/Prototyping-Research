@@ -13,6 +13,12 @@ export class WheelSpinScene {
             writable: true,
             value: false
         });
+        Object.defineProperty(this, "isTransitioning", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: false
+        });
         Object.defineProperty(this, "layeredSprites", {
             enumerable: true,
             configurable: true,
@@ -321,6 +327,9 @@ export class WheelSpinScene {
         await this.popIn(winText);
         // Wait a few seconds then auto-transition to PAGE 5
         await this.wait(3000);
+        if (this.isTransitioning)
+            return; // Prevent double-transition
+        this.isTransitioning = true;
         console.log('[WheelSpinScene] Auto-transitioning to PAGE 5...');
         const sceneManager = window.sceneManager;
         if (sceneManager) {
@@ -378,11 +387,15 @@ export class WheelSpinScene {
         }
     }
     destroy() {
+        this.layeredSprites.forEach(sprite => {
+            sprite.removeAllListeners();
+        });
         for (const s of this.layeredSprites)
             s.destroy();
         for (const el of this.elementsToDestroy)
             el.destroy();
         this.container.removeChildren();
+        this.container.removeAllListeners();
     }
     isReady() { return this.ready; }
 }

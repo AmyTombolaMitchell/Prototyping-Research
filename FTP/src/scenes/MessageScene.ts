@@ -4,6 +4,7 @@ import type { IScene } from '../sceneManager';
 export class MessageScene implements IScene {
   container = new Container();
   private ready = false;
+  private isTransitioning = false;
   private layeredSprites: Sprite[] = [];
   private readonly canvasWidth = 572;
   private readonly canvasHeight = 1247;
@@ -130,6 +131,9 @@ export class MessageScene implements IScene {
   }
   
   private async transitionToThankYou() {
+    if (this.isTransitioning) return; // Prevent double-transition
+    this.isTransitioning = true;
+    
     console.log('[MessageScene] Transitioning to Thank You page...');
     const sceneManager = (window as any).sceneManager;
     if (sceneManager) {
@@ -256,7 +260,14 @@ export class MessageScene implements IScene {
   update() {}
   
   destroy() {
+    this.layeredSprites.forEach(sprite => {
+      sprite.removeAllListeners();
+    });
+    this.clickableElements.forEach(el => {
+      el.removeAllListeners();
+    });
     for (const s of this.layeredSprites) s.destroy();
     this.container.removeChildren();
+    this.container.removeAllListeners();
   }
 }

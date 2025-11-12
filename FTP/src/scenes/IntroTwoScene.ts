@@ -11,6 +11,7 @@ export class IntroTwoScene implements IScene {
   private pulsingGlow: Graphics | null = null;
   private asset2Sprite: Sprite | null = null;
   private animationFrame = 0;
+  private isTransitioning = false; // Prevent multiple clicks
   
   async init() {
     console.log('[IntroTwoScene] Starting init');
@@ -113,6 +114,9 @@ export class IntroTwoScene implements IScene {
       sprite.eventMode = 'static';
       sprite.cursor = 'pointer';
       sprite.on('pointerdown', async () => {
+        if (this.isTransitioning) return; // Prevent double-click
+        this.isTransitioning = true;
+        
         console.log('[IntroTwoScene] Roll button clicked! Transitioning to PAGE 3...');
         const sceneManager = (window as any).sceneManager;
         if (sceneManager) {
@@ -166,8 +170,12 @@ export class IntroTwoScene implements IScene {
   }
   destroy() {
     if (this.pulsingGlow) this.pulsingGlow.destroy();
+    this.layeredSprites.forEach(sprite => {
+      sprite.removeAllListeners();
+    });
     for (const s of this.layeredSprites) s.destroy();
     this.container.removeChildren();
+    this.container.removeAllListeners();
   }
   isReady() { return this.ready; }
 }

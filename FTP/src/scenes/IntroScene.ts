@@ -8,6 +8,7 @@ export class IntroScene implements IScene {
   private layeredSprites: Sprite[] = [];
   private readonly canvasWidth = 572;
   private readonly canvasHeight = 1247;
+  private isTransitioning = false; // Prevent multiple clicks
 
   async init() {
     console.log('[IntroScene] init() called - BEFORE try block');
@@ -209,6 +210,9 @@ export class IntroScene implements IScene {
         sprite.eventMode = 'static';
         sprite.cursor = 'pointer';
         sprite.on('pointerdown', async () => {
+          if (this.isTransitioning) return; // Prevent double-click
+          this.isTransitioning = true;
+          
           console.log('[IntroScene] Asset 6 clicked! Transitioning to PAGE 2...');
           const sceneManager = (window as any).sceneManager;
           if (sceneManager) {
@@ -246,8 +250,14 @@ export class IntroScene implements IScene {
 
   update() {}
   destroy() {
+    // Remove all event listeners
+    this.layeredSprites.forEach(sprite => {
+      sprite.removeAllListeners();
+    });
+    
     for (const s of this.layeredSprites) s.destroy();
     this.container.removeChildren();
+    this.container.removeAllListeners();
   }
   public isReady() { return this.ready; }
 }

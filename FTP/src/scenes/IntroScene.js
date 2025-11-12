@@ -31,6 +31,12 @@ export class IntroScene {
             writable: true,
             value: 1247
         });
+        Object.defineProperty(this, "isTransitioning", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: false
+        }); // Prevent multiple clicks
     }
     async init() {
         console.log('[IntroScene] init() called - BEFORE try block');
@@ -212,6 +218,9 @@ export class IntroScene {
                 sprite.eventMode = 'static';
                 sprite.cursor = 'pointer';
                 sprite.on('pointerdown', async () => {
+                    if (this.isTransitioning)
+                        return; // Prevent double-click
+                    this.isTransitioning = true;
                     console.log('[IntroScene] Asset 6 clicked! Transitioning to PAGE 2...');
                     const sceneManager = window.sceneManager;
                     if (sceneManager) {
@@ -247,9 +256,14 @@ export class IntroScene {
     }
     update() { }
     destroy() {
+        // Remove all event listeners
+        this.layeredSprites.forEach(sprite => {
+            sprite.removeAllListeners();
+        });
         for (const s of this.layeredSprites)
             s.destroy();
         this.container.removeChildren();
+        this.container.removeAllListeners();
     }
     isReady() { return this.ready; }
 }

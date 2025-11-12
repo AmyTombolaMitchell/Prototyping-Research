@@ -13,6 +13,12 @@ export class DiceRollScene {
             writable: true,
             value: false
         });
+        Object.defineProperty(this, "isTransitioning", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: false
+        });
         Object.defineProperty(this, "layeredSprites", {
             enumerable: true,
             configurable: true,
@@ -115,6 +121,9 @@ export class DiceRollScene {
         await this.moveAvatarAlongPath();
         // Wait 3 seconds then auto-transition to PAGE 4
         await this.wait(3000);
+        if (this.isTransitioning)
+            return; // Prevent double-transition
+        this.isTransitioning = true;
         console.log('[DiceRollScene] Auto-transitioning to PAGE 4...');
         const sceneManager = window.sceneManager;
         if (sceneManager) {
@@ -274,11 +283,15 @@ export class DiceRollScene {
     }
     update() { }
     destroy() {
+        this.layeredSprites.forEach(sprite => {
+            sprite.removeAllListeners();
+        });
         for (const s of this.layeredSprites)
             s.destroy();
         for (const el of this.elementsToDestroy)
             el.destroy();
         this.container.removeChildren();
+        this.container.removeAllListeners();
     }
     isReady() { return this.ready; }
 }
