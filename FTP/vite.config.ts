@@ -1,8 +1,8 @@
 import { defineConfig } from 'vite';
 
-// For GitHub Pages: ensure relative asset paths by setting base to './'
+// For GitHub Pages: use repository name as base path
 export default defineConfig({
-  base: './',
+  base: '/Prototyping-Research/',
   publicDir: 'assets',
   server: {
     port: 5173,
