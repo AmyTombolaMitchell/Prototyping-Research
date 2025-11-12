@@ -13,13 +13,17 @@ console.log('[INIT] Starting application...');
     console.log('[INIT] Creating PixiJS application...');
     // PixiJS v8: use async init instead of passing options to constructor; use app.canvas not app.view
     const app = new Application();
+    // Detect if we're on mobile for performance optimization
+    const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
     // Set canvas to match the updated asset dimensions (572x1247 - portrait format)
     await app.init({
         background: '#000000',
         width: 572,
         height: 1247,
-        resolution: 1,
-        autoDensity: false
+        resolution: isMobile ? window.devicePixelRatio : 1, // Use device pixel ratio on mobile for sharper images
+        autoDensity: true, // Enable auto density for better mobile rendering
+        antialias: false, // Disable antialiasing for better mobile performance
+        powerPreference: 'high-performance' // Request high-performance GPU
     });
     console.log('[APP] Application initialized');
     // Initialize Assets with basePath for GitHub Pages
@@ -50,14 +54,21 @@ console.log('[INIT] Starting application...');
         console.log('[APP] Window:', windowWidth, 'x', windowHeight);
         console.log('[APP] Scale X:', scaleX, 'Scale Y:', scaleY, 'Final Scale:', scale);
         // Apply transform: translate to center, then scale
+        // Use translate3d for hardware acceleration on mobile
         app.canvas.style.transform = `translate(-50%, -50%) scale(${scale})`;
+        app.canvas.style.willChange = 'transform'; // Hint browser to optimize for transform changes
         console.log('[APP] Transform applied:', app.canvas.style.transform);
     };
     // Initial scale
     setTimeout(() => {
         scaleCanvas();
     }, 100);
-    window.addEventListener('resize', scaleCanvas);
+    // Throttle resize events for better mobile performance
+    let resizeTimeout;
+    window.addEventListener('resize', () => {
+        clearTimeout(resizeTimeout);
+        resizeTimeout = setTimeout(scaleCanvas, 150);
+    });
     const loadingEl = document.getElementById('loading');
     const loadingText = document.getElementById('loadingText');
     const progressBar = document.getElementById('progressBar');

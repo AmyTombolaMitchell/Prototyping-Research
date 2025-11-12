@@ -2,7 +2,10 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover" />
+  <meta name="mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-capable" content="yes" />
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <title>Tombola Free To Play</title>
   <style>
     * {
@@ -17,6 +20,11 @@
       font-family: Arial, Helvetica, sans-serif;
       color: white;
       overflow: hidden;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
+      -webkit-touch-callout: none;
+      -webkit-user-select: none;
+      user-select: none;
     }
     #app {
       width: 100vw;
@@ -35,6 +43,8 @@
       transform-origin: center center;
       opacity: 0;
       transition: opacity 0.3s ease-in;
+      touch-action: none;
+      -webkit-tap-highlight-color: transparent;
     }
     #app canvas.ready {
       opacity: 1;
