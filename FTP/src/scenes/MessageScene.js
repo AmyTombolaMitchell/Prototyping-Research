@@ -1,0 +1,264 @@
+import { Container, Sprite, Assets, Graphics } from 'pixi.js';
+export class MessageScene {
+    constructor() {
+        Object.defineProperty(this, "container", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: new Container()
+        });
+        Object.defineProperty(this, "ready", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: false
+        });
+        Object.defineProperty(this, "layeredSprites", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: []
+        });
+        Object.defineProperty(this, "canvasWidth", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: 572
+        });
+        Object.defineProperty(this, "canvasHeight", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: 1247
+        });
+        Object.defineProperty(this, "messages", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: []
+        });
+        Object.defineProperty(this, "clickableElements", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: []
+        });
+    }
+    async init() {
+        console.log('[MessageScene] Starting init');
+        // Add BACKGROUND from PAGE 1
+        const bgTexture = Assets.get('INTRO_BG');
+        if (bgTexture) {
+            const bg = new Sprite(bgTexture);
+            bg.anchor.set(0.5);
+            bg.x = this.canvasWidth / 2;
+            bg.y = this.canvasHeight / 2;
+            this.container.addChild(bg);
+            this.layeredSprites.push(bg);
+        }
+        // Add TOP_BANNER_AFTER from PAGE 4
+        const topBannerTexture = Assets.get('PAGE4_TOP_BANNER_AFTER');
+        if (topBannerTexture) {
+            const banner = new Sprite(topBannerTexture);
+            banner.anchor.set(0.5, 0);
+            banner.x = this.canvasWidth / 2;
+            banner.y = 0;
+            this.container.addChild(banner);
+            this.layeredSprites.push(banner);
+        }
+        // Add Asset 7 (lady) from PAGE 1 in same location
+        const ladyTexture = Assets.get('INTRO_7');
+        if (ladyTexture) {
+            const lady = new Sprite(ladyTexture);
+            lady.anchor.set(0, 1);
+            lady.x = 50;
+            lady.y = this.canvasHeight - 63;
+            lady.scale.set(0.7);
+            lady.alpha = 0;
+            this.container.addChild(lady);
+            this.layeredSprites.push(lady);
+            // Fade in animation for lady
+            await this.fadeIn(lady);
+        }
+        // Now show the message sequence
+        await this.showMessageSequence();
+        this.ready = true;
+        console.log('[MessageScene] Init complete');
+    }
+    async fadeIn(sprite) {
+        return new Promise((resolve) => {
+            let frame = 0;
+            const animate = () => {
+                frame++;
+                sprite.alpha = Math.min(1, sprite.alpha + 0.02);
+                if (sprite.alpha < 1) {
+                    requestAnimationFrame(animate);
+                }
+                else {
+                    resolve();
+                }
+            };
+            requestAnimationFrame(animate);
+        });
+    }
+    async showMessageSequence() {
+        // Asset 1 - appears in the middle
+        await this.showMessage('PAGE5_1', this.canvasWidth / 2, this.canvasHeight / 2, 0);
+        await this.wait(1000); // Longer pause
+        // Bump asset 1 up and fade it
+        await this.bumpUpAndFade(0, 150); // More spacing
+        // Asset 2 - appears in the middle
+        await this.showMessage('PAGE5_2', this.canvasWidth / 2, this.canvasHeight / 2, 1);
+        await this.wait(1000); // Longer pause
+        // Bump asset 1 and 2 up and fade
+        await this.bumpUpAndFade(0, 150);
+        await this.bumpUpAndFade(1, 150);
+        // Asset 3 - appears in the middle
+        await this.showMessage('PAGE5_3', this.canvasWidth / 2, this.canvasHeight / 2, 2);
+        await this.wait(1000); // Longer pause
+        // Assets 4 and 5 appear simultaneously
+        const asset5Texture = Assets.get('PAGE5_5');
+        const asset4Texture = Assets.get('PAGE5_4');
+        const promises = [];
+        if (asset5Texture) {
+            const asset5 = new Sprite(asset5Texture);
+            asset5.anchor.set(1, 1); // Anchor to bottom right
+            asset5.x = this.canvasWidth - 20;
+            asset5.y = this.canvasHeight - 120;
+            asset5.alpha = 0;
+            this.container.addChild(asset5);
+            this.layeredSprites.push(asset5);
+            promises.push(this.popIn(asset5, 1)); // Normal size
+        }
+        if (asset4Texture) {
+            const asset4 = new Sprite(asset4Texture);
+            asset4.anchor.set(1, 1); // Anchor to bottom right
+            asset4.x = this.canvasWidth - 40; // Moved slightly right
+            asset4.y = this.canvasHeight - 320; // Moved higher up for more gap
+            asset4.alpha = 0;
+            this.container.addChild(asset4);
+            this.layeredSprites.push(asset4);
+            promises.push(this.popIn(asset4, 0.6)); // Smaller scale
+        }
+        // Wait for both to complete together
+        await Promise.all(promises);
+        // Add clickable areas
+        this.addClickableAreas();
+    }
+    async transitionToThankYou() {
+        console.log('[MessageScene] Transitioning to Thank You page...');
+        const sceneManager = window.sceneManager;
+        if (sceneManager) {
+            const { ThankYouScene } = await import('./ThankYouScene');
+            await sceneManager.change(new ThankYouScene(), 'none');
+        }
+    }
+    addClickableAreas() {
+        // Create clickable area at bottom (0-100px height, full width)
+        const bottomArea = new Graphics();
+        bottomArea.rect(0, this.canvasHeight - 100, this.canvasWidth, 100);
+        bottomArea.fill({ color: 0x000000, alpha: 0.01 }); // Nearly invisible
+        bottomArea.eventMode = 'static';
+        bottomArea.cursor = 'pointer';
+        bottomArea.on('pointerdown', () => this.transitionToThankYou());
+        this.container.addChild(bottomArea);
+        this.clickableElements.push(bottomArea);
+        // Create clickable area at top (0-250px from top, full width)
+        const topArea = new Graphics();
+        topArea.rect(0, 0, this.canvasWidth, 250);
+        topArea.fill({ color: 0x000000, alpha: 0.01 }); // Nearly invisible
+        topArea.eventMode = 'static';
+        topArea.cursor = 'pointer';
+        topArea.on('pointerdown', () => this.transitionToThankYou());
+        this.container.addChild(topArea);
+        this.clickableElements.push(topArea);
+        // Make asset 4 and 5 clickable by finding them in layeredSprites
+        const asset4Texture = Assets.get('PAGE5_4');
+        const asset5Texture = Assets.get('PAGE5_5');
+        for (const sprite of this.layeredSprites) {
+            if (asset4Texture && sprite.texture === asset4Texture) {
+                sprite.eventMode = 'static';
+                sprite.cursor = 'pointer';
+                sprite.on('pointerdown', () => this.transitionToThankYou());
+            }
+            if (asset5Texture && sprite.texture === asset5Texture) {
+                sprite.eventMode = 'static';
+                sprite.cursor = 'pointer';
+                sprite.on('pointerdown', () => this.transitionToThankYou());
+            }
+        }
+    }
+    async showMessage(assetKey, x, y, index) {
+        const texture = Assets.get(assetKey);
+        if (texture) {
+            const message = new Sprite(texture);
+            message.anchor.set(0.5);
+            message.x = x;
+            message.y = y;
+            message.alpha = 0;
+            message.scale.set(0);
+            this.container.addChild(message);
+            this.messages[index] = message;
+            await this.popIn(message, 0.7); // Smaller scale for messages
+        }
+    }
+    async popIn(sprite, targetScale = 1) {
+        const duration = 20;
+        return new Promise((resolve) => {
+            let frame = 0;
+            const animate = () => {
+                frame++;
+                const progress = frame / duration;
+                sprite.alpha = Math.min(1, progress * 2);
+                sprite.scale.set(Math.min(targetScale, progress * 1.5 * targetScale));
+                if (frame < duration) {
+                    requestAnimationFrame(animate);
+                }
+                else {
+                    sprite.alpha = 1;
+                    sprite.scale.set(targetScale);
+                    resolve();
+                }
+            };
+            requestAnimationFrame(animate);
+        });
+    }
+    async bumpUpAndFade(index, spacing = 100) {
+        const message = this.messages[index];
+        if (!message)
+            return;
+        const duration = 20;
+        const startY = message.y;
+        const targetY = startY - spacing; // Bump up by spacing amount
+        return new Promise((resolve) => {
+            let frame = 0;
+            const animate = () => {
+                frame++;
+                const progress = frame / duration;
+                message.y = startY + (targetY - startY) * progress;
+                message.alpha = 1 - (progress * 0.5); // Fade to 50% opacity
+                if (frame < duration) {
+                    requestAnimationFrame(animate);
+                }
+                else {
+                    resolve();
+                }
+            };
+            requestAnimationFrame(animate);
+        });
+    }
+    async wait(ms) {
+        return new Promise((resolve) => {
+            setTimeout(resolve, ms);
+        });
+    }
+    isReady() {
+        return this.ready;
+    }
+    update() { }
+    destroy() {
+        for (const s of this.layeredSprites)
+            s.destroy();
+        this.container.removeChildren();
+    }
+}
