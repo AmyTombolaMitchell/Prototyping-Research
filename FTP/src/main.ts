@@ -3,9 +3,12 @@ import { SceneManager } from './sceneManager';
 import { IntroScene } from './scenes/IntroScene';
 import { IntroTwoScene } from './scenes/IntroTwoScene';
 import { DiceRollScene } from './scenes/DiceRollScene';
-import { InstantWinScene } from './scenes/InstantWinScene';
 import { WheelSpinScene } from './scenes/WheelSpinScene';
-import { FinishSequenceScene } from './scenes/FinishSequenceScene';
+import { MessageScene } from './scenes/MessageScene';
+import { ThankYouScene } from './scenes/ThankYouScene';
+// Commented out for now
+// import { InstantWinScene } from './scenes/InstantWinScene';
+// import { FinishSequenceScene } from './scenes/FinishSequenceScene';
 import { ASSETS } from './assets';
 
 // NOTE: Removed bulk Assets.add(ASSETS) due to runtime error inside Pixi's resolver (undefined startsWith).
@@ -13,62 +16,123 @@ import { ASSETS } from './assets';
 
 // PixiJS v8: use async init instead of passing options to constructor; use app.canvas not app.view
 const app = new Application();
-await app.init({ background: '#000000', resizeTo: window });
+// Set canvas to match the updated asset dimensions (572x1247 - portrait format)
+await app.init({ 
+  background: '#000000', 
+  width: 572,
+  height: 1247,
+  resolution: 1,
+  autoDensity: false
+});
+
+console.log('[APP] Application initialized');
+
 const mount = document.getElementById('app') as HTMLElement;
+if (!mount) {
+  console.error('[APP] Could not find #app element!');
+}
+
 mount.appendChild(app.canvas);
-app.canvas.style.width = '100%';
-app.canvas.style.height = '100%';
+
+// Debug: log everything
+console.log('[APP] Canvas dimensions:', app.canvas.width, 'x', app.canvas.height);
+console.log('[APP] Window dimensions:', window.innerWidth, 'x', window.innerHeight);
+
+// Use CSS transform to scale and center the canvas
+const scaleCanvas = () => {
+  const canvasWidth = 572;
+  const canvasHeight = 1247;
+  const windowWidth = window.innerWidth;
+  const windowHeight = window.innerHeight;
+  
+  // Calculate scale to fit
+  const scaleX = windowWidth / canvasWidth;
+  const scaleY = windowHeight / canvasHeight;
+  const scale = Math.min(scaleX, scaleY);
+  
+  console.log('[APP] Window:', windowWidth, 'x', windowHeight);
+  console.log('[APP] Scale X:', scaleX, 'Scale Y:', scaleY, 'Final Scale:', scale);
+  
+  // Apply transform: translate to center, then scale
+  app.canvas.style.transform = `translate(-50%, -50%) scale(${scale})`;
+  console.log('[APP] Transform applied:', app.canvas.style.transform);
+};
+
+// Initial scale
+setTimeout(() => {
+  scaleCanvas();
+}, 100);
+window.addEventListener('resize', scaleCanvas);
 
 const loadingEl = document.getElementById('loading');
 
 const sceneManager = new SceneManager(app.stage);
 
-let currentStep: number = 0;
+// Make sceneManager globally accessible for scene transitions
+(window as any).sceneManager = sceneManager;
+
+let currentStep: number = 0; // Start at PAGE 1
 
 async function preload() {
   if (!loadingEl) return;
-  const entries = Object.entries(ASSETS);
+  
+  // Only load assets needed for PAGE 1 and PAGE 2
+  const assetsToLoad = [
+    'INTRO_BG', 'INTRO_1', 'INTRO_2', 'INTRO_3', 'INTRO_4', 'INTRO_5', 
+    'INTRO_6', 'INTRO_7', 'INTRO_8', 'INTRO_9', 'INTRO_10',
+    'INTRO2_BG', 'INTRO2_TOP_BANNER', 'INTRO2_1', 'INTRO2_2', 'INTRO2_3',
+    'PAGE3_BG', 'PAGE3_TOP_BANNER', 'PAGE3_AVATAR', 'PAGE3_DICE', 'PAGE3_EVENT',
+    'PAGE4_BG', 'PAGE4_LOGO', 'PAGE4_SUPERSPINS', 'PAGE4_SUPERSPINSLOGOSMALL', 
+    'PAGE4_WHEEL', 'PAGE4_WHEELBACKGROUND', 'PAGE4_COINS', 'PAGE4_TOP_BANNER_AFTER',
+    'PAGE5_1', 'PAGE5_2', 'PAGE5_3', 'PAGE5_4', 'PAGE5_5'
+  ];
+  
   let loaded = 0;
   const failed: string[] = [];
   console.time('asset-preload');
-  for (const [key, url] of entries) {
-    // First probe the raw URL to surface HTTP status early.
-    try {
-      console.log('[preload] probe fetch', key, url);
-      const resp = await fetch(url, { cache: 'no-store' });
-      console.log('[preload] fetch status', key, resp.status, url);
-      if (!resp.ok) {
-        failed.push(`${key}:http-${resp.status}`);
-        continue; // Skip attempting to load via Assets if HTTP failed.
-      }
-    } catch (fetchErr) {
-      console.error('[preload] fetch error', key, fetchErr);
-      failed.push(`${key}:fetch-error`);
+  
+  for (const key of assetsToLoad) {
+    const url = ASSETS[key as keyof typeof ASSETS];
+    if (!url) {
+      console.warn('[preload] No URL for key', key);
       continue;
     }
-    // Direct load providing src & alias; avoids resolver path that triggered undefined error.
+    
     try {
+      console.log('[preload] loading', key, url);
       await Assets.load({ src: url, alias: key });
       loaded++;
-      if (loadingEl) loadingEl.textContent = `Loading assets... ${loaded}/${entries.length}`;
+      if (loadingEl) loadingEl.textContent = `Loading assets... ${loaded}/${assetsToLoad.length}`;
     } catch (assetErr) {
       console.error('[preload] asset load error', key, assetErr);
       failed.push(`${key}:asset-error`);
     }
   }
+  
   console.timeEnd('asset-preload');
   if (failed.length) {
     if (loadingEl) loadingEl.textContent = `Asset errors: ${failed.join(', ')}`;
     console.error('[preload] failures', failed);
+  } else {
+    console.log('[preload] All assets loaded successfully!');
   }
 }
 
 async function start() {
+  console.log('[START] Beginning preload');
   await preload();
   if (loadingEl) loadingEl.remove();
-  const intro = new IntroScene();
-  console.log('[scene] IntroScene start');
-  await sceneManager.change(intro);
+  
+  console.log('[START] Creating IntroScene');
+  const introScene = new IntroScene();
+  
+  console.log('[START] Manually testing init...');
+  await introScene.init();
+  console.log('[START] Manual init complete');
+  
+  console.log('[START] Changing to IntroScene');
+  await sceneManager.change(introScene);
+  console.log('[START] IntroScene loaded, starting ticker');
   app.ticker.add(() => update());
 }
 
@@ -76,35 +140,50 @@ async function start() {
 
 async function update() {
   sceneManager.update(app.ticker.deltaMS / 16.6667);
+  // Transitions are now handled by click events in each scene, not automatically here
   switch (currentStep) {
     case 0: {
       const s = sceneManager['current'] as IntroScene & { isReady?: () => boolean };
-      if (s?.isReady?.()) { console.log('[scene] Transition Intro -> IntroTwo'); currentStep = 1; sceneManager.change(new IntroTwoScene()); }
+      if (s?.isReady?.()) { 
+        console.log('[scene] IntroScene ready - waiting for user interaction'); 
+        currentStep = 1;
+        // Transition to PAGE 2 is handled by click event in IntroScene
+      }
       break;
     }
     case 1: {
       const s = sceneManager['current'] as IntroTwoScene & { isReady?: () => boolean };
-      if (s?.isReady?.()) { console.log('[scene] Transition IntroTwo -> DiceRoll'); currentStep = 2; sceneManager.change(new DiceRollScene()); }
+      if (s?.isReady?.()) { 
+        console.log('[scene] IntroTwoScene ready - waiting for user interaction'); 
+        currentStep = 2;
+        // Transition to PAGE 3 is handled by click event in IntroTwoScene
+      }
       break;
     }
     case 2: {
-      const s = sceneManager['current'] as DiceRollScene & { isDone?: () => boolean };
-      if (s?.isDone?.()) { console.log('[scene] Transition DiceRoll -> InstantWin'); currentStep = 3; sceneManager.change(new InstantWinScene()); }
+      const s = sceneManager['current'] as DiceRollScene & { isReady?: () => boolean };
+      if (s?.isReady?.()) { 
+        console.log('[scene] DiceRollScene ready - waiting for user interaction'); 
+        currentStep = 3;
+        // Transition to PAGE 4 is handled by click event in DiceRollScene
+      }
       break;
     }
     case 3: {
-      const s = sceneManager['current'] as InstantWinScene & { isDone?: () => boolean };
-      if (s?.isDone?.()) { console.log('[scene] Transition InstantWin -> WheelSpin'); currentStep = 4; sceneManager.change(new WheelSpinScene()); }
+      const s = sceneManager['current'] as WheelSpinScene & { isReady?: () => boolean };
+      if (s?.isReady?.()) { 
+        console.log('[scene] WheelSpinScene ready - waiting for user interaction'); 
+        currentStep = 4;
+        // Transition to PAGE 5 is handled by click event in WheelSpinScene
+      }
       break;
     }
     case 4: {
-      const s = sceneManager['current'] as WheelSpinScene & { isDone?: () => boolean };
-      if (s?.isDone?.()) { console.log('[scene] Transition WheelSpin -> FinishSequence'); currentStep = 5; sceneManager.change(new FinishSequenceScene()); }
-      break;
-    }
-    case 5: {
-      const s = sceneManager['current'] as FinishSequenceScene & { isDone?: () => boolean };
-      if (s?.isDone?.()) { console.log('[scene] FinishSequence complete'); currentStep = 6; /* end state */ }
+      const s = sceneManager['current'] as MessageScene & { isReady?: () => boolean };
+      if (s?.isReady?.()) { 
+        console.log('[scene] MessageScene complete - end of demo'); 
+        currentStep = 5; 
+      }
       break;
     }
   }

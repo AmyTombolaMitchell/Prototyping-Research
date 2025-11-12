@@ -1,70 +1,173 @@
-import { Container, Sprite, Assets } from 'pixi.js';
+import { Container, Sprite, Assets, Graphics } from 'pixi.js';
 import type { IScene } from '../sceneManager';
 import { ASSETS } from '../assets';
 
 export class IntroTwoScene implements IScene {
   container = new Container();
   private ready = false;
+  private layeredSprites: Sprite[] = [];
+  private readonly canvasWidth = 572;
+  private readonly canvasHeight = 1247;
+  private pulsingGlow: Graphics | null = null;
+  private asset2Sprite: Sprite | null = null;
+  private animationFrame = 0;
+  
   async init() {
-    // PAGE 2 layered assets: BACKGROUND2, 1 (always visible), 2 and 3 pop in
-    const keys = ['INTRO2_BG', 'INTRO2_1', 'INTRO2_2', 'INTRO2_3'];
-    const textures: Record<string, Awaited<ReturnType<typeof Assets.load>>> = {};
-    for (const k of keys) {
-      try {
-        textures[k] = await Assets.load(ASSETS[k as keyof typeof ASSETS]);
-      } catch (e) {
-        console.error('IntroTwoScene failed to load', k, e);
-      }
-    }
-
-    // Add background
-    const bg = new Sprite(textures['INTRO2_BG']);
-    bg.anchor.set(0.5);
-    bg.x = window.innerWidth / 2;
-    bg.y = window.innerHeight / 2;
-    this.container.addChild(bg);
-
-    // Add 1 (always visible)
-    const s1 = new Sprite(textures['INTRO2_1']);
-    s1.anchor.set(0.5);
-    s1.x = window.innerWidth / 2;
-    s1.y = window.innerHeight / 2;
-    this.container.addChild(s1);
-
-    // Pop in 2 and 3
+    console.log('[IntroTwoScene] Starting init');
+    
+    // Helper to animate pop/bounce for elements (same as page 1)
     const popIn = (sprite: Sprite) => {
       sprite.alpha = 0;
-      sprite.scale.set(0.5);
+      const originalScale = sprite.scale.x;
+      sprite.scale.set(0);
       let frame = 0;
       const animate = () => {
         frame++;
-        sprite.alpha = Math.min(1, sprite.alpha + 0.08);
-        sprite.scale.set(Math.min(1, sprite.scale.x + 0.05));
-        if (frame < 24) requestAnimationFrame(animate);
+        sprite.alpha = Math.min(1, sprite.alpha + 0.05);
+        
+        // Bounce effect - overshoot then settle
+        const progress = frame / 50;
+        let scale;
+        if (progress < 0.5) {
+          scale = originalScale * (progress * 2.4);
+        } else if (progress < 0.75) {
+          scale = originalScale * (1.2 - (progress - 0.5) * 0.8);
+        } else {
+          scale = originalScale * (1.0 + (1.0 - progress) * 0.2);
+        }
+        
+        sprite.scale.set(scale);
+        
+        if (frame < 50) {
+          requestAnimationFrame(animate);
+        } else {
+          sprite.scale.set(originalScale);
+        }
       };
       requestAnimationFrame(animate);
     };
+    
+    // Use PAGE 1 background
+    const bgTexture = Assets.get('INTRO_BG');
+    if (bgTexture) {
+      const bg = new Sprite(bgTexture);
+      bg.anchor.set(0.5);
+      bg.x = this.canvasWidth / 2;
+      bg.y = this.canvasHeight / 2;
+      this.container.addChild(bg);
+      this.layeredSprites.push(bg);
+    }
+    
+    // Add TOP_BANNER at the top
+    const topBannerTexture = Assets.get('INTRO2_TOP_BANNER');
+    if (topBannerTexture) {
+      const banner = new Sprite(topBannerTexture);
+      banner.anchor.set(0.5, 0); // Anchor at top center
+      banner.x = this.canvasWidth / 2;
+      banner.y = 0; // At the very top
+      this.container.addChild(banner);
+      this.layeredSprites.push(banner);
+    }
+    
+    // Add asset 7 (lady) from PAGE 1 - same position and size as page 1
+    const ladyTexture = Assets.get('INTRO_7');
+    if (ladyTexture) {
+      const lady = new Sprite(ladyTexture);
+      lady.anchor.set(0, 1);
+      lady.x = 50;
+      lady.y = this.canvasHeight - 63;
+      lady.scale.set(0.7);
+      this.container.addChild(lady);
+      this.layeredSprites.push(lady);
+    }
+    
+    // Add PAGE 2 asset 3 in the middle of the screen (appears first, smaller)
+    const asset3Texture = Assets.get('INTRO2_3');
+    if (asset3Texture) {
+      const sprite = new Sprite(asset3Texture);
+      sprite.anchor.set(0.5);
+      sprite.scale.set(0.7); // Smaller
+      sprite.x = this.canvasWidth / 2;
+      sprite.y = this.canvasHeight / 2;
+      this.container.addChild(sprite);
+      this.layeredSprites.push(sprite);
+      popIn(sprite);
+      await new Promise(res => setTimeout(res, 500));
+    }
+    
+    // Add PAGE 2 asset 2 to the right of asset 7 (appears second, clickable button)
+    const asset2Texture = Assets.get('INTRO2_2');
+    if (asset2Texture) {
+      // Create pulsing red glow behind the button
+      this.pulsingGlow = new Graphics();
+      this.container.addChild(this.pulsingGlow);
+      
+      const sprite = new Sprite(asset2Texture);
+      sprite.anchor.set(0.5);
+      sprite.scale.set(0.8); // Slightly bigger
+      sprite.x = 330; // Slightly to the left
+      sprite.y = this.canvasHeight - 170; // Moved down a bit
+      this.asset2Sprite = sprite;
+      
+      // Make it interactive/clickable
+      sprite.eventMode = 'static';
+      sprite.cursor = 'pointer';
+      sprite.on('pointerdown', async () => {
+        console.log('[IntroTwoScene] Roll button clicked! Transitioning to PAGE 3...');
+        const sceneManager = (window as any).sceneManager;
+        if (sceneManager) {
+          const { DiceRollScene } = await import('./DiceRollScene');
+          await sceneManager.change(new DiceRollScene(), 'none');
+        }
+      });
+      
+      this.container.addChild(sprite);
+      this.layeredSprites.push(sprite);
+      popIn(sprite);
+      await new Promise(res => setTimeout(res, 500));
+    }
 
-    const s2 = new Sprite(textures['INTRO2_2']);
-    s2.anchor.set(0.5);
-    s2.x = window.innerWidth / 2;
-    s2.y = window.innerHeight / 2;
-    this.container.addChild(s2);
-    popIn(s2);
-    await new Promise(res => setTimeout(res, 450));
-
-    const s3 = new Sprite(textures['INTRO2_3']);
-    s3.anchor.set(0.5);
-    s3.x = window.innerWidth / 2;
-    s3.y = window.innerHeight / 2;
-    this.container.addChild(s3);
-    popIn(s3);
-    await new Promise(res => setTimeout(res, 450));
-
-    // Mark ready after sequence
+    console.log('[IntroTwoScene] All sprites added, total:', this.layeredSprites.length);
+    // Wait before marking ready
+    await new Promise(res => setTimeout(res, 1000));
     this.ready = true;
+    console.log('[IntroTwoScene] Marked as ready');
   }
-  update() {}
-  destroy() { this.container.removeChildren(); }
+  
+  update() {
+    // Animate the pulsing red glow around Asset 2 (50% slower, smaller radius)
+    if (this.pulsingGlow && this.asset2Sprite) {
+      this.animationFrame++;
+      
+      // Clear previous drawing
+      this.pulsingGlow.clear();
+      
+      // Create pulsing effect with oscillating radius (50% slower, smaller expansion)
+      const baseRadius = 80;
+      const pulse = Math.sin(this.animationFrame * 0.025) * 10; // Slower (0.05 -> 0.025), smaller expansion (30 -> 10)
+      const radius = baseRadius + pulse;
+      
+      // Draw multiple circles for a soft glow effect
+      const centerX = this.asset2Sprite.x;
+      const centerY = this.asset2Sprite.y;
+      
+      // Outer glow (most transparent)
+      this.pulsingGlow.circle(centerX, centerY, radius * 1.2);
+      this.pulsingGlow.fill({ color: 0xFF0000, alpha: 0.2 });
+      
+      // Middle glow
+      this.pulsingGlow.circle(centerX, centerY, radius * 0.8);
+      this.pulsingGlow.fill({ color: 0xFF0000, alpha: 0.3 });
+      
+      // Inner glow (brightest)
+      this.pulsingGlow.circle(centerX, centerY, radius * 0.5);
+      this.pulsingGlow.fill({ color: 0xFF0000, alpha: 0.4 });
+    }
+  }
+  destroy() {
+    if (this.pulsingGlow) this.pulsingGlow.destroy();
+    for (const s of this.layeredSprites) s.destroy();
+    this.container.removeChildren();
+  }
   isReady() { return this.ready; }
 }
