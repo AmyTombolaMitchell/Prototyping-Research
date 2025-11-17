@@ -1,6 +1,6 @@
 import { Container, Graphics, Text } from 'pixi.js';
 
-export class DayThirtyTransition {
+export class TokenShopTransition {
   constructor() {
     this.container = new Container();
     this.ready = false;
@@ -9,71 +9,76 @@ export class DayThirtyTransition {
   }
 
   async init() {
-    console.log('[DayThirtyTransition] Showing DAY 30 transition...');
+    console.log('[TokenShopTransition] Showing transition...');
 
+    // Black background
     const background = new Graphics();
     background.rect(0, 0, this.canvasWidth, this.canvasHeight);
     background.fill({ color: 0x000000 });
     this.container.addChild(background);
 
-    const fastForwardText = new Text({
-      text: '>>>',
+    // Fast forward symbol >>
+    const ffText = new Text({
+      text: '>>',
       style: {
         fontFamily: 'Arial',
-        fontSize: 64,
+        fontSize: 60,
         fill: 0xFFFFFF,
         fontWeight: 'bold'
       }
     });
-    fastForwardText.anchor.set(0.5);
-    fastForwardText.x = this.canvasWidth / 2;
-    fastForwardText.y = this.canvasHeight / 2 - 90;
-    fastForwardText.alpha = 0;
-    this.container.addChild(fastForwardText);
+    ffText.anchor.set(0.5);
+    ffText.x = this.canvasWidth / 2;
+    ffText.y = this.canvasHeight / 2 - 80;
+    ffText.alpha = 0;
+    this.container.addChild(ffText);
 
-    const dayThirtyText = new Text({
-      text: 'DAY 30',
+    // "3 DAYS LATER" text
+    const dayText = new Text({
+      text: '3 DAYS LATER',
       style: {
         fontFamily: 'Arial',
-        fontSize: 52,
+        fontSize: 48,
         fill: 0xFFFFFF,
         fontWeight: 'bold',
         letterSpacing: 2
       }
     });
-    dayThirtyText.anchor.set(0.5);
-    dayThirtyText.x = this.canvasWidth / 2;
-    dayThirtyText.y = this.canvasHeight / 2;
-    dayThirtyText.alpha = 0;
-    this.container.addChild(dayThirtyText);
+    dayText.anchor.set(0.5);
+    dayText.x = this.canvasWidth / 2;
+    dayText.y = this.canvasHeight / 2;
+    dayText.alpha = 0;
+    this.container.addChild(dayText);
 
+    // Fade in both at the same time
     await Promise.all([
-      this.fadeIn(fastForwardText, 500),
-      this.fadeIn(dayThirtyText, 500)
+      this.fadeIn(ffText, 500),
+      this.fadeIn(dayText, 500)
     ]);
-
     await this.wait(1500);
-
+    
+    // Fade out both
     await Promise.all([
-      this.fadeOut(fastForwardText, 500),
-      this.fadeOut(dayThirtyText, 500)
+      this.fadeOut(ffText, 500),
+      this.fadeOut(dayText, 500)
     ]);
-
-    await this.navigateToDayThirty();
+    
+    // Navigate to TokenShopScene
+    await this.navigateToTokenShop();
 
     this.ready = true;
   }
 
   async fadeIn(sprite, duration) {
     const startTime = performance.now();
-
+    
     return new Promise(resolve => {
       const animate = () => {
         const elapsed = performance.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
-
+        
         sprite.alpha = progress;
-
+        
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
@@ -87,14 +92,14 @@ export class DayThirtyTransition {
 
   async fadeOut(sprite, duration) {
     const startTime = performance.now();
-
+    
     return new Promise(resolve => {
       const animate = () => {
         const elapsed = performance.now() - startTime;
         const progress = Math.min(elapsed / duration, 1);
-
+        
         sprite.alpha = 1 - progress;
-
+        
         if (progress < 1) {
           requestAnimationFrame(animate);
         } else {
@@ -110,12 +115,12 @@ export class DayThirtyTransition {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
 
-  async navigateToDayThirty() {
-    console.log('[DayThirtyTransition] Navigating to DayThirtyScene...');
+  async navigateToTokenShop() {
+    console.log('[TokenShopTransition] Navigating to TokenShopScene...');
     const sceneManager = window.sceneManager;
     if (sceneManager) {
-      const { DayThirtyScene } = await import('./DayThirtyScene.js');
-      await sceneManager.change(new DayThirtyScene(), 'none');
+      const { TokenShopScene } = await import('./TokenShopScene.js');
+      await sceneManager.change(new TokenShopScene(), 'none');
     }
   }
 
@@ -124,7 +129,7 @@ export class DayThirtyTransition {
   }
 
   update(delta) {
-    // No updates required while transition is showing
+    // No updates needed
   }
 
   destroy() {

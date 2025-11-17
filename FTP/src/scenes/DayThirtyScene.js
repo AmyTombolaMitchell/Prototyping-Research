@@ -54,7 +54,7 @@ export class DayThirtyScene {
       this.topBanner.anchor.set(0.5, 0);
       this.topBanner.x = this.canvasWidth / 2;
       this.topBanner.y = 0;
-  this.topBanner.scale.set(1.5);
+      this.topBanner.scale.set(0.75); // Fixed scale to match other scenes
       this.container.addChild(this.topBanner);
       this.layeredSprites.push(this.topBanner);
     }
@@ -465,7 +465,7 @@ export class DayThirtyScene {
       asset5.scale.set(0);
       asset5.eventMode = 'static';
       asset5.cursor = 'pointer';
-      asset5.on('pointerdown', () => this.handleContinue());
+      asset5.on('pointerdown', () => this.handleContinueDayTwo());
       this.container.addChild(asset5);
       promises.push(this.popIn(asset5, 0.8));
     }
@@ -480,7 +480,7 @@ export class DayThirtyScene {
       asset4.scale.set(0);
       asset4.eventMode = 'static';
       asset4.cursor = 'pointer';
-      asset4.on('pointerdown', () => this.handleContinue());
+      asset4.on('pointerdown', () => this.handleContinueDayTwo());
       this.container.addChild(asset4);
       promises.push(this.popIn(asset4, 0.5));
     }
@@ -557,6 +557,16 @@ export class DayThirtyScene {
     if (sceneManager) {
       const { ThankYouScene } = await import('./ThankYouScene.js');
       await sceneManager.change(new ThankYouScene(), 'none');
+    }
+
+  }
+
+  async handleContinueDayTwo() {
+    console.log('[DayThirtyScene] Player clicked to continue - transitioning to Day Two');
+    const sceneManager = window.sceneManager;
+    if (sceneManager) {
+      const { DayTwoScene } = await import('./DayTwoScene.js');
+      await sceneManager.change(new DayTwoScene(), 'none');
     }
   }
 

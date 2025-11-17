@@ -44,8 +44,8 @@ export class DaySevenScene {
     this.scrollContainer = new Container();
     this.container.addChild(this.scrollContainer);
 
-  // Add LONG_BACKGROUND (same as Day Two)
-  const bgTexture = Assets.get('page6_LONG_BACKGROUND');
+    // Add LONG_BACKGROUND (same as Day Two)
+    const bgTexture = Assets.get('PAGE6_LONG_BACKGROUND');
     if (bgTexture) {
       this.longBackground = new Sprite(bgTexture);
       this.longBackground.anchor.set(0.5, 0);
@@ -71,23 +71,24 @@ export class DaySevenScene {
       console.log('[DaySevenScene] Scroll limits - min:', this.minY, 'max:', this.maxY);
     }
 
-  // Add TOP BANNER (BANNER_NO_0)
-  const topBannerTexture = Assets.get('BANNER_NO_0');
+    // Add TOP BANNER (BANNER_NO_0)
+    const topBannerTexture = Assets.get('BANNER_NO_0');
     if (topBannerTexture) {
-      this.topBanner = new Sprite(topBannerTexture);
-      this.topBanner.anchor.set(0.5, 0);
-      this.topBanner.x = this.canvasWidth / 2;
-      this.topBanner.y = 0;
-      this.topBanner.scale.set(0.75);
-      this.container.addChild(this.topBanner);
-      this.layeredSprites.push(this.topBanner);
+  this.topBanner = new Sprite(topBannerTexture);
+  this.topBanner.anchor.set(0.5, 0);
+  this.topBanner.x = this.canvasWidth / 2;
+  this.topBanner.y = 0;
+  this.topBanner.scale.set(0.75);
+  console.log('[DaySevenScene] Banner created:', this.topBanner.texture, 'scale:', this.topBanner.scale.x);
+  this.container.addChild(this.topBanner);
+  this.layeredSprites.push(this.topBanner);
 
       // Remember desired display width so all future banners match this size
       this.topBannerTargetWidth = this.topBanner.width;
     }
 
-  // Add BOTTOM_BANNER
-  const bottomBannerTexture = Assets.get('page6_BOTTOM_BANNER');
+    // Add BOTTOM_BANNER
+    const bottomBannerTexture = Assets.get('PAGE6_BOTTOM_BANNER');
     if (bottomBannerTexture) {
       const bottomBanner = new Sprite(bottomBannerTexture);
       bottomBanner.anchor.set(0.5, 1);
@@ -98,8 +99,8 @@ export class DaySevenScene {
       this.layeredSprites.push(bottomBanner);
     }
 
-  // Add AVATAR at starting position (position 5)
-  const avatarTexture = Assets.get('page3_AVATAR');
+    // Add AVATAR at starting position (position 5)
+    const avatarTexture = Assets.get('PAGE3_AVATAR');
     if (avatarTexture && this.scrollContainer) {
       this.avatar = new Sprite(avatarTexture);
       this.avatar.anchor.set(0.5, 1);
@@ -182,8 +183,8 @@ export class DaySevenScene {
   }
 
   async showDiceButton() {
-  // Create dice button using INTRO2_2 asset (same as Day Two)
-  const diceTexture = Assets.get('INTRO2_2');
+    // Create dice button using INTRO2_2 asset (same as Day Two)
+    const diceTexture = Assets.get('INTRO2_2');
     if (!diceTexture) return;
 
     // Create pulsing red glow behind the button
@@ -238,7 +239,7 @@ export class DaySevenScene {
   }
 
   async animateDiceRoll() {
-  const diceTexture = Assets.get('page3_DICE');
+    const diceTexture = Assets.get('PAGE3_DICE');
     if (!diceTexture) {
       console.error('[DaySevenScene] PAGE3_DICE not found');
       return;
@@ -302,8 +303,8 @@ export class DaySevenScene {
       console.error('[DaySevenScene] topBanner is null');
     }
     
-  // Add flame asset to top right with fire animation
-  const flameTexture = Assets.get('page10_flame');
+    // Add flame asset to top right with fire animation
+    const flameTexture = Assets.get('PAGE10_FLAME');
     console.log('[DaySevenScene] PAGE10_FLAME texture:', !!flameTexture);
     if (flameTexture) {
       this.flame = new Sprite(flameTexture);
@@ -324,8 +325,8 @@ export class DaySevenScene {
       console.error('[DaySevenScene] PAGE10_FLAME not found in Assets');
     }
     
-  // Add character
-  const charTexture = Assets.get('page6_char');
+    // Add character
+    const charTexture = Assets.get('PAGE6_CHAR');
     console.log('[DaySevenScene] PAGE6_CHAR texture:', !!charTexture);
     if (charTexture) {
       this.charSprite = new Sprite(charTexture);
@@ -365,13 +366,13 @@ export class DaySevenScene {
   }
 
   async showChatBubble(assetKey, index) {
-  const texture = Assets.get(assetKey);
+    const texture = Assets.get(assetKey);
     if (!texture) return;
     
     const bubble = new Sprite(texture);
     bubble.anchor.set(0.5);
     bubble.x = this.canvasWidth / 2;
-  bubble.y = this.canvasHeight - 580; // Match DayTwoScene position
+    bubble.y = this.canvasHeight - 580; // Match DayTwoScene position
     bubble.alpha = 0;
     bubble.scale.set(0);
     this.container.addChild(bubble);
@@ -462,7 +463,7 @@ export class DaySevenScene {
       return;
     }
 
-  const texture = Assets.get(assetKey);
+    const texture = Assets.get(assetKey);
     if (!texture) {
       console.error('[DaySevenScene] Banner texture not found for key:', assetKey);
       return;

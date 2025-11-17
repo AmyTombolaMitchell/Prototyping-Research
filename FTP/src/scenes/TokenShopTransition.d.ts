@@ -1,6 +1,6 @@
 import { Container } from 'pixi.js';
 
-export declare class TokenShopScene {
+export declare class TokenShopTransition {
   container: Container;
   init(): Promise<void>;
   update(delta: number): void;

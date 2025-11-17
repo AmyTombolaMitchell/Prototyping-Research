@@ -70,9 +70,10 @@ export class MessageScene {
             banner.anchor.set(0.5, 0);
             banner.x = this.canvasWidth / 2;
             banner.y = 0;
+            banner.scale.set(0.75); // Consistent banner size
+            console.log('[MessageScene] Banner created:', banner.texture, 'scale:', banner.scale.x);
             this.container.addChild(banner);
             this.layeredSprites.push(banner);
-            console.log('[MessageScene] Banner added at', banner.x, banner.y);
         }
         else {
             console.warn('[MessageScene] BANNER_NO_25 texture not found!');
@@ -173,13 +174,14 @@ export class MessageScene {
         }
     }
     addClickableAreas() {
+        console.log('[MessageScene] addClickableAreas() called');
         // Create clickable area at bottom (0-100px height, full width)
         const bottomArea = new Graphics();
         bottomArea.rect(0, this.canvasHeight - 100, this.canvasWidth, 100);
         bottomArea.fill({ color: 0x000000, alpha: 0.01 }); // Nearly invisible
         bottomArea.eventMode = 'static';
         bottomArea.cursor = 'pointer';
-        bottomArea.on('pointerdown', () => this.transitionToThankYou());
+        bottomArea.on('pointerdown', () => this.transitionToDayTwo());
         this.container.addChild(bottomArea);
         this.clickableElements.push(bottomArea);
         // Create clickable area at top (0-250px from top, full width)
@@ -188,7 +190,7 @@ export class MessageScene {
         topArea.fill({ color: 0x000000, alpha: 0.01 }); // Nearly invisible
         topArea.eventMode = 'static';
         topArea.cursor = 'pointer';
-        topArea.on('pointerdown', () => this.transitionToThankYou());
+        topArea.on('pointerdown', () => this.transitionToDayTwo());
         this.container.addChild(topArea);
         this.clickableElements.push(topArea);
         // Make asset 4 and 5 clickable by finding them in layeredSprites
@@ -198,13 +200,34 @@ export class MessageScene {
             if (asset4Texture && sprite.texture === asset4Texture) {
                 sprite.eventMode = 'static';
                 sprite.cursor = 'pointer';
-                sprite.on('pointerdown', () => this.transitionToThankYou());
+                sprite.on('pointerdown', () => {
+                    console.log('[MessageScene] Asset 4 clicked! Transitioning to Day Two...');
+                    this.transitionToDayTwo();
+                });
             }
             if (asset5Texture && sprite.texture === asset5Texture) {
                 sprite.eventMode = 'static';
                 sprite.cursor = 'pointer';
-                sprite.on('pointerdown', () => this.transitionToThankYou());
+                sprite.on('pointerdown', () => {
+                    console.log('[MessageScene] Asset 5 clicked! Transitioning to Day Two...');
+                    this.transitionToDayTwo();
+                });
             }
+        }
+    }
+    async transitionToDayTwo() {
+        if (this.isTransitioning)
+            return;
+        this.isTransitioning = true;
+        this.clickableElements.forEach(el => {
+            el.eventMode = 'none';
+            el.cursor = 'default';
+        });
+        console.log('[MessageScene] Transitioning to Day Two...');
+        const sceneManager = window.sceneManager;
+        if (sceneManager) {
+            const { DayTwoScene } = await import('./DayTwoScene');
+            await sceneManager.change(new DayTwoScene(), 'none');
         }
     }
     async showMessage(assetKey, x, y, index) {
