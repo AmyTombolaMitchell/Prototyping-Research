@@ -14,6 +14,7 @@ export class DiceRollScene implements IScene {
   private winText: Text | null = null;
   private currentPosition = 0;
   private elementsToDestroy: (Sprite | Graphics | Text)[] = [];
+  private topBanner: Sprite | null = null; // Track the banner so we can update it
   
   // Path positions for avatar movement
   private readonly pathPositions = [
@@ -39,15 +40,19 @@ export class DiceRollScene implements IScene {
       this.layeredSprites.push(bg);
     }
     
-    // Add TOP_BANNER at the top
-    const topBannerTexture = Assets.get('PAGE3_TOP_BANNER');
+    // Add TOP_BANNER at the top - start with no_0 banner
+    const topBannerTexture = Assets.get('BANNER_NO_0');
+    console.log('[DiceRollScene] BANNER_NO_0 texture:', topBannerTexture);
     if (topBannerTexture) {
-      const banner = new Sprite(topBannerTexture);
-      banner.anchor.set(0.5, 0);
-      banner.x = this.canvasWidth / 2;
-      banner.y = 0;
-      this.container.addChild(banner);
-      this.layeredSprites.push(banner);
+      this.topBanner = new Sprite(topBannerTexture);
+      this.topBanner.anchor.set(0.5, 0);
+      this.topBanner.x = this.canvasWidth / 2;
+      this.topBanner.y = 0;
+      this.container.addChild(this.topBanner);
+      this.layeredSprites.push(this.topBanner);
+      console.log('[DiceRollScene] Banner added at', this.topBanner.x, this.topBanner.y);
+    } else {
+      console.warn('[DiceRollScene] BANNER_NO_0 texture not found!');
     }
     
     // Add AVATAR at starting position
@@ -93,7 +98,39 @@ export class DiceRollScene implements IScene {
     // Move through positions 1-5 (skipping 0 which is the starting position)
     for (let i = 1; i < this.pathPositions.length; i++) {
       await this.jumpToPosition(i);
+      this.updateBanner(i); // Update banner when landing on each position
       await this.wait(200); // Reduced from 450ms to 200ms
+    }
+  }
+  
+  private updateBanner(positionIndex: number) {
+    if (!this.topBanner) return;
+    
+    // Map position to banner (positions 1-5 use banners no_1 to no_5)
+    let bannerTexture;
+    switch(positionIndex) {
+      case 1:
+        bannerTexture = Assets.get('BANNER_NO_1');
+        break;
+      case 2:
+        bannerTexture = Assets.get('BANNER_NO_2');
+        break;
+      case 3:
+        bannerTexture = Assets.get('BANNER_NO_3');
+        break;
+      case 4:
+        bannerTexture = Assets.get('BANNER_NO_4');
+        break;
+      case 5:
+        bannerTexture = Assets.get('BANNER_NO_5');
+        break;
+    }
+    
+    if (bannerTexture) {
+      this.topBanner.texture = bannerTexture;
+      console.log(`[DiceRollScene] Updated banner to position ${positionIndex}`);
+    } else {
+      console.warn(`[DiceRollScene] Banner texture not found for position ${positionIndex}`);
     }
   }
   

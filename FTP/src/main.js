@@ -1,6 +1,11 @@
 import { Application, Assets } from 'pixi.js';
 import { SceneManager } from './sceneManager';
 import { IntroScene } from './scenes/IntroScene';
+import { IntroTwoScene } from './scenes/IntroTwoScene';
+import { DiceRollScene } from './scenes/DiceRollScene';
+import { WheelSpinScene } from './scenes/WheelSpinScene';
+import { MessageScene } from './scenes/MessageScene';
+import { DayTwoScene } from './scenes/DayTwoScene';
 // Commented out for now
 // import { InstantWinScene } from './scenes/InstantWinScene';
 // import { FinishSequenceScene } from './scenes/FinishSequenceScene';
@@ -97,7 +102,8 @@ console.log('[INIT] Starting application...');
             'PAGE3_BG', 'PAGE3_TOP_BANNER', 'PAGE3_AVATAR', 'PAGE3_DICE', 'PAGE3_EVENT',
             'PAGE4_BG', 'PAGE4_LOGO', 'PAGE4_SUPERSPINS', 'PAGE4_SUPERSPINSLOGOSMALL',
             'PAGE4_WHEEL', 'PAGE4_WHEELBACKGROUND', 'PAGE4_COINS', 'PAGE4_TOP_BANNER_AFTER',
-            'PAGE5_1', 'PAGE5_2', 'PAGE5_3', 'PAGE5_4', 'PAGE5_5'
+            'PAGE5_1', 'PAGE5_2', 'PAGE5_3', 'PAGE5_4', 'PAGE5_5',
+            'PAGE6_LONG_BACKGROUND', 'PAGE6_BOTTOM_BANNER'
         ];
         const totalSteps = assetsToLoad.length + 2; // assets + scene init + scene change
         let currentProgress = 0;
@@ -139,16 +145,32 @@ console.log('[INIT] Starting application...');
             const { totalSteps, currentProgress } = progress;
             // Update progress for scene initialization
             updateProgress(currentProgress + 1, totalSteps, 'Initializing scene...');
-            console.log('[START] Creating IntroScene');
+            console.log('[START] Creating scenes');
             const introScene = new IntroScene();
-            console.log('[START] Manually testing init...');
-            await introScene.init();
+            const introTwoScene = new IntroTwoScene();
+            const diceRollScene = new DiceRollScene();
+            const wheelSpinScene = new WheelSpinScene();
+            const messageScene = new MessageScene();
+            const dayTwoScene = new DayTwoScene();
+            
+            // Register all scenes
+            sceneManager.register('IntroScene', introScene);
+            sceneManager.register('IntroTwoScene', introTwoScene);
+            sceneManager.register('DiceRollScene', diceRollScene);
+            sceneManager.register('WheelSpinScene', wheelSpinScene);
+            sceneManager.register('MessageScene', messageScene);
+            sceneManager.register('DayTwoScene', dayTwoScene);
+            
+            // TESTING: Skip to Day Two scene
+            console.log('[START] Manually testing Day Two scene init...');
+            await dayTwoScene.init();
             console.log('[START] Manual init complete');
             // Update progress for scene change
             updateProgress(currentProgress + 2, totalSteps, 'Loading game...');
-            console.log('[START] Changing to IntroScene');
-            await sceneManager.change(introScene);
-            console.log('[START] IntroScene loaded, starting ticker');
+            console.log('[START] Changing to DayTwoScene');
+            await sceneManager.change(dayTwoScene);
+            console.log('[START] DayTwoScene loaded, starting ticker');
+            currentStep = 5; // Skip to end step
             app.ticker.add(() => update());
             // Wait for multiple frames to ensure scene is fully rendered
             await new Promise(resolve => requestAnimationFrame(() => {

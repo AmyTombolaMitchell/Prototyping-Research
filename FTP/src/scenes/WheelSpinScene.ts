@@ -31,8 +31,9 @@ export class WheelSpinScene implements IScene {
       this.layeredSprites.push(bg);
     }
     
-    // Add TOP_BANNER from PAGE 3 at the top
-    const topBannerTexture = Assets.get('PAGE3_TOP_BANNER');
+    // Add TOP_BANNER from PAGE 3 at the top - start with no_5 banner
+    const topBannerTexture = Assets.get('BANNER_NO_5');
+    console.log('[WheelSpinScene] BANNER_NO_5 texture:', topBannerTexture);
     if (topBannerTexture) {
       this.topBanner = new Sprite(topBannerTexture);
       this.topBanner.anchor.set(0.5, 0);
@@ -40,6 +41,9 @@ export class WheelSpinScene implements IScene {
       this.topBanner.y = 0;
       this.container.addChild(this.topBanner);
       this.layeredSprites.push(this.topBanner);
+      console.log('[WheelSpinScene] Banner added at', this.topBanner.x, this.topBanner.y);
+    } else {
+      console.warn('[WheelSpinScene] BANNER_NO_5 texture not found!');
     }
     
     // Add WHEELBACKGROUND in lower middle
@@ -242,9 +246,9 @@ export class WheelSpinScene implements IScene {
   }
   
   private async showWinResult() {
-    // Change banner to TOP_BANNER_AFTER
+    // Change banner to no_25 banner when winning tokens
     if (this.topBanner) {
-      const afterBannerTexture = Assets.get('PAGE4_TOP_BANNER_AFTER');
+      const afterBannerTexture = Assets.get('BANNER_NO_25');
       if (afterBannerTexture) {
         this.topBanner.texture = afterBannerTexture;
       }

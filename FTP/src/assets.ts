@@ -1,4 +1,5 @@
 // Use relative paths so they work under GitHub Pages sub-paths without leading slash.
+// Updated: Banner assets added
 
 export const ASSETS = {
   // Removed legacy FTP_DICE_ROLL_1 and FTP_DICE_ROLL_2 in favor of PAGE 1 and PAGE 2 layered intro assets
@@ -43,12 +44,65 @@ export const ASSETS = {
   PAGE4_WHEELBACKGROUND: 'PAGE 4/WHEELBACKGROUND.jpg',
   PAGE4_COINS: 'PAGE 4/COINS.png',
   PAGE4_TOP_BANNER_AFTER: 'PAGE 4/TOP_BANNER_AFTER.png',
-  // PAGE 5 assets for message scene
   PAGE5_1: 'PAGE 5/1.png',
   PAGE5_2: 'PAGE 5/2.png',
   PAGE5_3: 'PAGE 5/3.png',
   PAGE5_4: 'PAGE 5/4.png',
-  PAGE5_5: 'PAGE 5/5.png'
+  PAGE5_5: 'PAGE 5/5.png',
+  // PAGE 6 assets for Day Two scene
+  PAGE6_LONG_BACKGROUND: 'PAGE 6/LONG_BACKGROUND.png',
+  PAGE6_BOTTOM_BANNER: 'PAGE 6/BOTTOM_BANNER.png',
+  PAGE6_CHAR: 'PAGE 6/char.png',
+  PAGE6_CHAT_1: 'PAGE 6/chat_1.png',
+  PAGE6_CHAT_2: 'PAGE 6/chat_2.png',
+  PAGE6_CHAT_3: 'PAGE 6/chat_3.png',
+  PAGE6_TOKEN_SHOP: 'PAGE 6/token_shop.png',
+  // PAGE 7 assets for token shop scene
+  PAGE7_LONG_BACKGROUND_SHOP: 'PAGE 7/LONG_BACKGROUND_SHOP.png',
+  PAGE7_SHOP_1: 'PAGE 7/shop_1.png',
+  PAGE7_SHOP_2: 'PAGE 7/shop_2.png',
+  // PAGE 8 assets for super spins scene
+  PAGE8_SUPER_SPINS_BG: 'PAGE 8/super_spins_bg.png',
+  PAGE8_SUPERSPINS_WHEEL: 'PAGE 8/superspins_wheel.png',
+  PAGE8_SUPERSPINS_WHEEL_AFTER: 'PAGE 8/superspins_wheel_after.png',
+  PAGE8_SPIN_BUTTON: 'PAGE 8/spin_button.png',
+  PAGE8_SUPERSPINS_WIN: 'PAGE 8/superspins_win.png',
+  PAGE8_FLIP_TILE: 'PAGE 8/flip_tile.png',
+  PAGE8_FLIP_100: 'PAGE 8/flip_100.png',
+  PAGE8_FLIP_20: 'PAGE 8/flip_20.png',
+  PAGE8_FLIP_5: 'PAGE 8/flip_5.png',
+  PAGE8_FLIP_FP: 'PAGE 8/flip_fp.png',
+  PAGE8_FLIP_SPIN: 'PAGE 8/flip_spin.png',
+  PAGE8_FLIP_100_AFTER: 'PAGE 8/flip_100_after.png',
+  PAGE8_FLIP_20_AFTER: 'PAGE 8/flip_20_after.png',
+  PAGE8_FLIP_5_AFTER: 'PAGE 8/flip_5_after.png',
+  PAGE8_FLIP_SPIN_AFTER: 'PAGE 8/flip_spin_after.png',
+  // PAGE 10 assets
+  PAGE10_FLAME: 'PAGE 10/flame.png',
+  PAGE10_CHAT_1: 'PAGE 10/chat_1.png',
+  PAGE10_CHAT_2: 'PAGE 10/chat_2.png',
+  // PAGE 11 assets
+  PAGE11_LK_BACKGROUND: 'PAGE 11/lk_background.png',
+  PAGE11_LK_CHAR: 'PAGE 11/lk_char.png',
+  PAGE11_LK_CHAT_1: 'PAGE 11/lk_chat_1.png',
+  PAGE11_LK_CHAT_2: 'PAGE 11/lk_chat_2.png',
+  // Top banners
+  BANNER_NO_0: 'TOPBANNERS/no_0.png',
+  BANNER_NO_1: 'TOPBANNERS/no_1.png',
+  BANNER_NO_2: 'TOPBANNERS/no_2.png',
+  BANNER_NO_3: 'TOPBANNERS/no_3.png',
+  BANNER_NO_4: 'TOPBANNERS/no_4.png',
+  BANNER_NO_5: 'TOPBANNERS/no_5.png',
+  BANNER_NO_25: 'TOPBANNERS/no_25.png',
+  BANNER_NO_26: 'TOPBANNERS/no_26.png',
+  BANNER_NO_27: 'TOPBANNERS/no_27.png',
+  BANNER_NO_28: 'TOPBANNERS/no_28.png',
+  BANNER_NO_29: 'TOPBANNERS/no_29.png',
+  BANNER_NO_30: 'TOPBANNERS/no_30.png',
+  COIN_COLLECT: 'TOPBANNERS/coin_collect.png'
 } as const;
+
+console.log('[ASSETS] Total assets loaded:', Object.keys(ASSETS).length);
+console.log('[ASSETS] Banner assets:', Object.keys(ASSETS).filter(k => k.startsWith('BANNER')));
 
 export type AssetKey = keyof typeof ASSETS;

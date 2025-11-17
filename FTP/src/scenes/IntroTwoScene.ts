@@ -59,8 +59,9 @@ export class IntroTwoScene implements IScene {
       this.layeredSprites.push(bg);
     }
     
-    // Add TOP_BANNER at the top
-    const topBannerTexture = Assets.get('INTRO2_TOP_BANNER');
+    // Add TOP_BANNER at the top - using no_0 banner
+    const topBannerTexture = Assets.get('BANNER_NO_0');
+    console.log('[IntroTwoScene] BANNER_NO_0 texture:', topBannerTexture);
     if (topBannerTexture) {
       const banner = new Sprite(topBannerTexture);
       banner.anchor.set(0.5, 0); // Anchor at top center
@@ -68,6 +69,9 @@ export class IntroTwoScene implements IScene {
       banner.y = 0; // At the very top
       this.container.addChild(banner);
       this.layeredSprites.push(banner);
+      console.log('[IntroTwoScene] Banner added successfully at position', banner.x, banner.y);
+    } else {
+      console.warn('[IntroTwoScene] BANNER_NO_0 texture not found!');
     }
     
     // Add asset 7 (lady) from PAGE 1 - same position and size as page 1

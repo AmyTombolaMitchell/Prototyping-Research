@@ -43,6 +43,12 @@ export class DiceRollScene {
             writable: true,
             value: null
         });
+        Object.defineProperty(this, "topBanner", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: null
+        });
         Object.defineProperty(this, "spotlight", {
             enumerable: true,
             configurable: true,
@@ -94,15 +100,20 @@ export class DiceRollScene {
             this.container.addChild(bg);
             this.layeredSprites.push(bg);
         }
-        // Add TOP_BANNER at the top
-        const topBannerTexture = Assets.get('PAGE3_TOP_BANNER');
+        // Add TOP_BANNER at the top - start with no_0 banner
+        const topBannerTexture = Assets.get('BANNER_NO_0');
+        console.log('[DiceRollScene] BANNER_NO_0 texture:', topBannerTexture);
         if (topBannerTexture) {
-            const banner = new Sprite(topBannerTexture);
-            banner.anchor.set(0.5, 0);
-            banner.x = this.canvasWidth / 2;
-            banner.y = 0;
-            this.container.addChild(banner);
-            this.layeredSprites.push(banner);
+            this.topBanner = new Sprite(topBannerTexture);
+            this.topBanner.anchor.set(0.5, 0);
+            this.topBanner.x = this.canvasWidth / 2;
+            this.topBanner.y = 0;
+            this.topBanner.scale.set(0.75); // Make it a tiny bit bigger
+            this.container.addChild(this.topBanner);
+            this.layeredSprites.push(this.topBanner);
+            console.log('[DiceRollScene] Banner added at', this.topBanner.x, this.topBanner.y);
+        } else {
+            console.warn('[DiceRollScene] BANNER_NO_0 texture not found!');
         }
         // Add AVATAR at starting position
         const avatarTexture = Assets.get('PAGE3_AVATAR');
@@ -141,6 +152,7 @@ export class DiceRollScene {
         // Move through positions 1-5 (skipping 0 which is the starting position)
         for (let i = 1; i < this.pathPositions.length; i++) {
             await this.jumpToPosition(i);
+            this.updateBanner(i); // Update banner after each position
             await this.wait(200); // Reduced from 450ms to 200ms
         }
     }
@@ -182,6 +194,32 @@ export class DiceRollScene {
             };
             requestAnimationFrame(animate);
         });
+    }
+    updateBanner(positionIndex) {
+        if (!this.topBanner)
+            return;
+        let bannerTexture;
+        switch (positionIndex) {
+            case 1:
+                bannerTexture = Assets.get('BANNER_NO_1');
+                break;
+            case 2:
+                bannerTexture = Assets.get('BANNER_NO_2');
+                break;
+            case 3:
+                bannerTexture = Assets.get('BANNER_NO_3');
+                break;
+            case 4:
+                bannerTexture = Assets.get('BANNER_NO_4');
+                break;
+            case 5:
+                bannerTexture = Assets.get('BANNER_NO_5');
+                break;
+        }
+        if (bannerTexture) {
+            this.topBanner.texture = bannerTexture;
+            console.log('[DiceRollScene] Banner updated to position', positionIndex);
+        }
     }
     showSpotlight() {
         if (!this.avatar)

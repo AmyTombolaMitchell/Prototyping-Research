@@ -47,5 +47,8 @@ export const ASSETS = {
     PAGE5_2: 'PAGE 5/2.png',
     PAGE5_3: 'PAGE 5/3.png',
     PAGE5_4: 'PAGE 5/4.png',
-    PAGE5_5: 'PAGE 5/5.png'
+    PAGE5_5: 'PAGE 5/5.png',
+    // PAGE 6 assets for Day Two scene
+    PAGE6_LONG_BACKGROUND: 'PAGE 6/LONG_BACKGROUND.png',
+    PAGE6_BOTTOM_BANNER: 'PAGE 6/BOTTOM_BANNER.png'
 };

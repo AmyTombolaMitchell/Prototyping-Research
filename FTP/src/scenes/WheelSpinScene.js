@@ -92,15 +92,20 @@ export class WheelSpinScene {
             this.container.addChild(bg);
             this.layeredSprites.push(bg);
         }
-        // Add TOP_BANNER from PAGE 3 at the top
-        const topBannerTexture = Assets.get('PAGE3_TOP_BANNER');
+        // Add TOP_BANNER from PAGE 3 at the top - start with no_5 banner
+        const topBannerTexture = Assets.get('BANNER_NO_5');
+        console.log('[WheelSpinScene] BANNER_NO_5 texture:', topBannerTexture);
         if (topBannerTexture) {
             this.topBanner = new Sprite(topBannerTexture);
             this.topBanner.anchor.set(0.5, 0);
             this.topBanner.x = this.canvasWidth / 2;
             this.topBanner.y = 0;
+            this.topBanner.scale.set(0.75); // Make it a tiny bit bigger
             this.container.addChild(this.topBanner);
             this.layeredSprites.push(this.topBanner);
+            console.log('[WheelSpinScene] Banner added at', this.topBanner.x, this.topBanner.y);
+        } else {
+            console.warn('[WheelSpinScene] BANNER_NO_5 texture not found!');
         }
         // Add WHEELBACKGROUND in lower middle
         const wheelBgTexture = Assets.get('PAGE4_WHEELBACKGROUND');
@@ -282,11 +287,12 @@ export class WheelSpinScene {
         });
     }
     async showWinResult() {
-        // Change banner to TOP_BANNER_AFTER
+        // Change banner to no_25
         if (this.topBanner) {
-            const afterBannerTexture = Assets.get('PAGE4_TOP_BANNER_AFTER');
+            const afterBannerTexture = Assets.get('BANNER_NO_25');
             if (afterBannerTexture) {
                 this.topBanner.texture = afterBannerTexture;
+                console.log('[WheelSpinScene] Banner changed to BANNER_NO_25');
             }
         }
         // Create pulsing white spotlight behind where coins will appear

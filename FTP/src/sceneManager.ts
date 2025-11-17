@@ -10,15 +10,33 @@ export interface IScene {
 export class SceneManager {
   private current: IScene | null = null;
   private root: Container;
+  private scenes: Map<string, IScene> = new Map();
 
   constructor(root: Container) {
     this.root = root;
   }
 
-  async change(scene: IScene, transition: 'slide' | 'fade' | 'none' = 'slide') {
+  register(name: string, scene: IScene) {
+    this.scenes.set(name, scene);
+  }
+
+  async change(sceneOrName: IScene | string, transition: 'slide' | 'fade' | 'none' = 'slide') {
     console.log('[SceneManager] Changing scene with transition:', transition);
     
     const oldScene = this.current;
+    
+    // Get scene either from parameter or from registry
+    let scene: IScene;
+    if (typeof sceneOrName === 'string') {
+      const registeredScene = this.scenes.get(sceneOrName);
+      if (!registeredScene) {
+        console.error('[SceneManager] Scene not found:', sceneOrName);
+        return;
+      }
+      scene = registeredScene;
+    } else {
+      scene = sceneOrName;
+    }
     
     // Add new scene
     this.current = scene;

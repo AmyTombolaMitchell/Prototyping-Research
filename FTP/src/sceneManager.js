@@ -12,11 +12,34 @@ export class SceneManager {
             writable: true,
             value: void 0
         });
+        Object.defineProperty(this, "scenes", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: new Map()
+        });
         this.root = root;
     }
-    async change(scene, transition = 'slide') {
+    register(name, scene) {
+        this.scenes.set(name, scene);
+    }
+    async change(sceneOrName, transition = 'slide') {
         console.log('[SceneManager] Changing scene with transition:', transition);
         const oldScene = this.current;
+        
+        // Get scene either from parameter or from registry
+        let scene;
+        if (typeof sceneOrName === 'string') {
+            const registeredScene = this.scenes.get(sceneOrName);
+            if (!registeredScene) {
+                console.error('[SceneManager] Scene not found:', sceneOrName);
+                return;
+            }
+            scene = registeredScene;
+        } else {
+            scene = sceneOrName;
+        }
+        
         // Add new scene
         this.current = scene;
         this.root.addChild(scene.container);
