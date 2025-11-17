@@ -36,7 +36,7 @@ jobs:
         working-directory: FTP
 
       - name: Add .nojekyll to dist
-        run: echo > dist/.nojekyll
+        run: cp .nojekyll dist/.nojekyll
         working-directory: FTP
 
       - name: List dist contents
