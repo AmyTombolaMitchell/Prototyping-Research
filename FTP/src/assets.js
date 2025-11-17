@@ -80,9 +80,9 @@ export const ASSETS = {
     BANNER_NO_28: 'TOPBANNERS/no_28.png',
     BANNER_NO_29: 'TOPBANNERS/no_29.png',
     BANNER_NO_30: 'TOPBANNERS/no_30.png',
-    COIN_COLLECT: 'TOPBANNERS/coin_collect.png',
-    FTP_FINISH_1: '/page2/FTP_FINISH_1.png',
-    FTP_FINISH_2: '/page2/FTP_FINISH_2.png',
-    FTP_FINISH_3: '/page2/FTP_FINISH_3.png',
-    FTP_INSTANT_WIN: '/page2/FTP_INSTANT_WIN.png'
+    COIN_COLLECT: '/Prototyping-Research/TOPBANNERS/coin_collect.png',
+    FTP_FINISH_1: '/Prototyping-Research/page2/FTP_FINISH_1.png',
+    FTP_FINISH_2: '/Prototyping-Research/page2/FTP_FINISH_2.png',
+    FTP_FINISH_3: '/Prototyping-Research/page2/FTP_FINISH_3.png',
+    FTP_INSTANT_WIN: '/Prototyping-Research/page2/FTP_INSTANT_WIN.png'
 };
