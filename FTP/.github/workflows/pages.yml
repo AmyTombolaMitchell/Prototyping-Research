@@ -39,11 +39,15 @@ jobs:
         run: echo > dist/.nojekyll
         working-directory: FTP
 
+      - name: List dist contents
+        run: dir /s dist
+        working-directory: FTP
 
       - name: Upload artifact
-        uses: actions/upload-pages-artifact@v3
+        uses: actions/upload-pages-artifact@v4
         with:
           path: FTP/dist
+
 
   deploy:
     needs: build-deploy
