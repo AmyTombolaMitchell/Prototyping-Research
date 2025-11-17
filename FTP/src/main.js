@@ -68,13 +68,18 @@ console.log('[INIT] Starting application...');
         await new Promise(resolve => setTimeout(resolve, 5000));
         console.log('[preload] Starting asset loading now...');
         const assetsToLoad = [
+            // page1 assets
             'INTRO_BG', 'INTRO_1', 'INTRO_2', 'INTRO_3', 'INTRO_4', 'INTRO_5',
             'INTRO_6', 'INTRO_7', 'INTRO_8', 'INTRO_9', 'INTRO_10',
             'INTRO2_BG', 'INTRO2_1', 'INTRO2_2', 'INTRO2_3',
+            // page3 assets
             'PAGE3_BG', 'PAGE3_AVATAR', 'PAGE3_DICE', 'PAGE3_EVENT',
+            // page4 assets
             'PAGE4_BG', 'PAGE4_LOGO', 'PAGE4_SUPERSPINS', 'PAGE4_SUPERSPINSLOGOSMALL',
             'PAGE4_WHEEL', 'PAGE4_WHEELBACKGROUND', 'PAGE4_COINS',
+            // page5 assets
             'PAGE5_1', 'PAGE5_2', 'PAGE5_3', 'PAGE5_4', 'PAGE5_5',
+            // page6 assets
             'PAGE6_LONG_BACKGROUND', 'PAGE6_BOTTOM_BANNER', 'PAGE6_CHAR', 'PAGE6_CHAT_1', 'PAGE6_CHAT_2', 'PAGE6_CHAT_3', 'PAGE6_TOKEN_SHOP'
         ];
         const totalSteps = assetsToLoad.length + 2;
@@ -84,7 +89,30 @@ console.log('[INIT] Starting application...');
         console.time('asset-preload');
         let firstAssetLoaded = false;
         for (const key of assetsToLoad) {
-            const url = ASSETS[key];
+            let url = ASSETS[key];
+            // Patch asset paths to use /public/ subfolders
+            if (url && url.startsWith('/Prototyping-Research/PAGE 1/'))
+                url = url.replace('/Prototyping-Research/PAGE 1/', '/page1/');
+            if (url && url.startsWith('/Prototyping-Research/PAGE 2/'))
+                url = url.replace('/Prototyping-Research/PAGE 2/', '/page2/');
+            if (url && url.startsWith('/Prototyping-Research/PAGE 3/'))
+                url = url.replace('/Prototyping-Research/PAGE 3/', '/page3/');
+            if (url && url.startsWith('/Prototyping-Research/PAGE 4/'))
+                url = url.replace('/Prototyping-Research/PAGE 4/', '/page4/');
+            if (url && url.startsWith('/Prototyping-Research/PAGE 5/'))
+                url = url.replace('/Prototyping-Research/PAGE 5/', '/page5/');
+            if (url && url.startsWith('/Prototyping-Research/PAGE 6/'))
+                url = url.replace('/Prototyping-Research/PAGE 6/', '/page6/');
+            if (url && url.startsWith('/Prototyping-Research/PAGE 7/'))
+                url = url.replace('/Prototyping-Research/PAGE 7/', '/page7/');
+            if (url && url.startsWith('/Prototyping-Research/PAGE 8/'))
+                url = url.replace('/Prototyping-Research/PAGE 8/', '/page8/');
+            if (url && url.startsWith('/Prototyping-Research/PAGE 10/'))
+                url = url.replace('/Prototyping-Research/PAGE 10/', '/page10/');
+            if (url && url.startsWith('/Prototyping-Research/PAGE 11/'))
+                url = url.replace('/Prototyping-Research/PAGE 11/', '/page11/');
+            if (url && url.startsWith('/Prototyping-Research/TOPBANNERS/'))
+                url = url.replace('/Prototyping-Research/TOPBANNERS/', '/TOPBANNERS/');
             if (!url) {
                 console.warn('[preload] No URL for key', key);
                 continue;
@@ -113,50 +141,50 @@ console.log('[INIT] Starting application...');
         console.timeEnd('asset-preload');
         console.log('[preload] Loading banners with hardcoded paths...');
         const bannerAssets = [
-            { key: 'BANNER_NO_0', url: '/Prototyping-Research/TOPBANNERS/no_0.png' },
-            { key: 'BANNER_NO_1', url: '/Prototyping-Research/TOPBANNERS/no_1.png' },
-            { key: 'BANNER_NO_2', url: '/Prototyping-Research/TOPBANNERS/no_2.png' },
-            { key: 'BANNER_NO_3', url: '/Prototyping-Research/TOPBANNERS/no_3.png' },
-            { key: 'BANNER_NO_4', url: '/Prototyping-Research/TOPBANNERS/no_4.png' },
-            { key: 'BANNER_NO_5', url: '/Prototyping-Research/TOPBANNERS/no_5.png' },
-            { key: 'BANNER_NO_25', url: '/Prototyping-Research/TOPBANNERS/no_25.png' },
-            { key: 'BANNER_NO_26', url: '/Prototyping-Research/TOPBANNERS/no_26.png' },
-            { key: 'BANNER_NO_27', url: '/Prototyping-Research/TOPBANNERS/no_27.png' },
-            { key: 'BANNER_NO_28', url: '/Prototyping-Research/TOPBANNERS/no_28.png' },
-            { key: 'BANNER_NO_29', url: '/Prototyping-Research/TOPBANNERS/no_29.png' },
-            { key: 'BANNER_NO_30', url: '/Prototyping-Research/TOPBANNERS/no_30.png' },
-            { key: 'COIN_COLLECT', url: '/Prototyping-Research/TOPBANNERS/coin_collect.png' },
-            { key: 'PAGE6_CHAR', url: '/Prototyping-Research/PAGE 6/char.png' },
-            { key: 'PAGE6_CHAT_1', url: '/Prototyping-Research/PAGE 6/chat_1.png' },
-            { key: 'PAGE6_CHAT_2', url: '/Prototyping-Research/PAGE 6/chat_2.png' },
-            { key: 'PAGE6_CHAT_3', url: '/Prototyping-Research/PAGE 6/chat_3.png' },
-            { key: 'PAGE6_TOKEN_SHOP', url: '/Prototyping-Research/PAGE 6/token_shop.png' },
-            { key: 'PAGE7_LONG_BACKGROUND_SHOP', url: '/Prototyping-Research/PAGE 7/LONG_BACKGROUND_SHOP.png' },
-            { key: 'PAGE7_SHOP_1', url: '/Prototyping-Research/PAGE 7/shop_1.png' },
-            { key: 'PAGE7_SHOP_2', url: '/Prototyping-Research/PAGE 7/shop_2.png' },
-            { key: 'PAGE8_SUPER_SPINS_BG', url: '/Prototyping-Research/PAGE 8/super_spins_bg.png' },
-            { key: 'PAGE8_SUPERSPINS_WHEEL', url: '/Prototyping-Research/PAGE 8/superspins_wheel.png' },
-            { key: 'PAGE8_SUPERSPINS_WHEEL_AFTER', url: '/Prototyping-Research/PAGE 8/superspins_wheel_after.png' },
-            { key: 'PAGE8_SPIN_BUTTON', url: '/Prototyping-Research/PAGE 8/spin_button.png' },
-            { key: 'PAGE8_SUPERSPINS_WIN', url: '/Prototyping-Research/PAGE 8/superspins_win.png' },
-            { key: 'PAGE8_FLIP_TILE', url: '/Prototyping-Research/PAGE 8/flip_tile.png' },
-            { key: 'PAGE8_FLIP_100', url: '/Prototyping-Research/PAGE 8/flip_100.png' },
-            { key: 'PAGE8_FLIP_20', url: '/Prototyping-Research/PAGE 8/flip_20.png' },
-            { key: 'PAGE8_FLIP_5', url: '/Prototyping-Research/PAGE 8/flip_5.png' },
-            { key: 'PAGE8_FLIP_FP', url: '/Prototyping-Research/PAGE 8/flip_fp.png' },
-            { key: 'PAGE8_FLIP_SPIN', url: '/Prototyping-Research/PAGE 8/flip_spin.png' },
-            { key: 'PAGE8_FLIP_100_AFTER', url: '/Prototyping-Research/PAGE 8/flip_100_after.png' },
-            { key: 'PAGE8_FLIP_20_AFTER', url: '/Prototyping-Research/PAGE 8/flip_20_after.png' },
-            { key: 'PAGE8_FLIP_5_AFTER', url: '/Prototyping-Research/PAGE 8/flip_5_after.png' },
-            { key: 'PAGE8_FLIP_SPIN_AFTER', url: '/Prototyping-Research/PAGE 8/flip_spin_after.png' },
-            { key: 'BANNER_NO_STREAK', url: '/Prototyping-Research/TOPBANNERS/no_streak.png' },
-            { key: 'PAGE10_FLAME', url: '/Prototyping-Research/PAGE 10/flame.png' },
-            { key: 'PAGE10_CHAT_1', url: '/Prototyping-Research/PAGE 10/chat_1.png' },
-            { key: 'PAGE10_CHAT_2', url: '/Prototyping-Research/PAGE 10/chat_2.png' },
-            { key: 'PAGE11_LK_BACKGROUND', url: '/Prototyping-Research/PAGE 11/lk_background.png' },
-            { key: 'PAGE11_LK_CHAR', url: '/Prototyping-Research/PAGE 11/lk_char.png' },
-            { key: 'PAGE11_LK_CHAT_1', url: '/Prototyping-Research/PAGE 11/lk_chat_1.png' },
-            { key: 'PAGE11_LK_CHAT_2', url: '/Prototyping-Research/PAGE 11/lk_chat_2.png' }
+            { key: 'BANNER_NO_0', url: '/TOPBANNERS/no_0.png' },
+            { key: 'BANNER_NO_1', url: '/TOPBANNERS/no_1.png' },
+            { key: 'BANNER_NO_2', url: '/TOPBANNERS/no_2.png' },
+            { key: 'BANNER_NO_3', url: '/TOPBANNERS/no_3.png' },
+            { key: 'BANNER_NO_4', url: '/TOPBANNERS/no_4.png' },
+            { key: 'BANNER_NO_5', url: '/TOPBANNERS/no_5.png' },
+            { key: 'BANNER_NO_25', url: '/TOPBANNERS/no_25.png' },
+            { key: 'BANNER_NO_26', url: '/TOPBANNERS/no_26.png' },
+            { key: 'BANNER_NO_27', url: '/TOPBANNERS/no_27.png' },
+            { key: 'BANNER_NO_28', url: '/TOPBANNERS/no_28.png' },
+            { key: 'BANNER_NO_29', url: '/TOPBANNERS/no_29.png' },
+            { key: 'BANNER_NO_30', url: '/TOPBANNERS/no_30.png' },
+            { key: 'COIN_COLLECT', url: '/TOPBANNERS/coin_collect.png' },
+            { key: 'PAGE6_CHAR', url: '/page6/char.png' },
+            { key: 'PAGE6_CHAT_1', url: '/page6/chat_1.png' },
+            { key: 'PAGE6_CHAT_2', url: '/page6/chat_2.png' },
+            { key: 'PAGE6_CHAT_3', url: '/page6/chat_3.png' },
+            { key: 'PAGE6_TOKEN_SHOP', url: '/page6/token_shop.png' },
+            { key: 'PAGE7_LONG_BACKGROUND_SHOP', url: '/page7/LONG_BACKGROUND_SHOP.png' },
+            { key: 'PAGE7_SHOP_1', url: '/page7/shop_1.png' },
+            { key: 'PAGE7_SHOP_2', url: '/page7/shop_2.png' },
+            { key: 'PAGE8_SUPER_SPINS_BG', url: '/page8/super_spins_bg.png' },
+            { key: 'PAGE8_SUPERSPINS_WHEEL', url: '/page8/superspins_wheel.png' },
+            { key: 'PAGE8_SUPERSPINS_WHEEL_AFTER', url: '/page8/superspins_wheel_after.png' },
+            { key: 'PAGE8_SPIN_BUTTON', url: '/page8/spin_button.png' },
+            { key: 'PAGE8_SUPERSPINS_WIN', url: '/page8/superspins_win.png' },
+            { key: 'PAGE8_FLIP_TILE', url: '/page8/flip_tile.png' },
+            { key: 'PAGE8_FLIP_100', url: '/page8/flip_100.png' },
+            { key: 'PAGE8_FLIP_20', url: '/page8/flip_20.png' },
+            { key: 'PAGE8_FLIP_5', url: '/page8/flip_5.png' },
+            { key: 'PAGE8_FLIP_FP', url: '/page8/flip_fp.png' },
+            { key: 'PAGE8_FLIP_SPIN', url: '/page8/flip_spin.png' },
+            { key: 'PAGE8_FLIP_100_AFTER', url: '/page8/flip_100_after.png' },
+            { key: 'PAGE8_FLIP_20_AFTER', url: '/page8/flip_20_after.png' },
+            { key: 'PAGE8_FLIP_5_AFTER', url: '/page8/flip_5_after.png' },
+            { key: 'PAGE8_FLIP_SPIN_AFTER', url: '/page8/flip_spin_after.png' },
+            { key: 'BANNER_NO_STREAK', url: '/TOPBANNERS/no_streak.png' },
+            { key: 'PAGE10_FLAME', url: '/page10/flame.png' },
+            { key: 'PAGE10_CHAT_1', url: '/page10/chat_1.png' },
+            { key: 'PAGE10_CHAT_2', url: '/page10/chat_2.png' },
+            { key: 'PAGE11_LK_BACKGROUND', url: '/page11/lk_background.png' },
+            { key: 'PAGE11_LK_CHAR', url: '/page11/lk_char.png' },
+            { key: 'PAGE11_LK_CHAT_1', url: '/page11/lk_chat_1.png' },
+            { key: 'PAGE11_LK_CHAT_2', url: '/page11/lk_chat_2.png' }
         ];
         for (const banner of bannerAssets) {
             try {
