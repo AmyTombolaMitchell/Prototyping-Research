@@ -70,10 +70,10 @@ export class MessageScene {
             banner.anchor.set(0.5, 0);
             banner.x = this.canvasWidth / 2;
             banner.y = 0;
-            banner.scale.set(0.5); // Lower scale to 50%
+            banner.scale.set(0.75); // Consistent banner size
+            console.log('[MessageScene] Banner created:', banner.texture, 'scale:', banner.scale.x);
             this.container.addChild(banner);
             this.layeredSprites.push(banner);
-            console.log('[MessageScene] Banner added at', banner.x, banner.y, 'scale:', banner.scale.x, 'texture size:', banner.width, banner.height);
         }
         else {
             console.warn('[MessageScene] BANNER_NO_25 texture not found!');
@@ -181,7 +181,7 @@ export class MessageScene {
         bottomArea.fill({ color: 0x000000, alpha: 0.01 }); // Nearly invisible
         bottomArea.eventMode = 'static';
         bottomArea.cursor = 'pointer';
-        bottomArea.on('pointerdown', () => this.transitionToThankYou());
+        bottomArea.on('pointerdown', () => this.transitionToDayTwo());
         this.container.addChild(bottomArea);
         this.clickableElements.push(bottomArea);
         // Create clickable area at top (0-250px from top, full width)
@@ -190,7 +190,7 @@ export class MessageScene {
         topArea.fill({ color: 0x000000, alpha: 0.01 }); // Nearly invisible
         topArea.eventMode = 'static';
         topArea.cursor = 'pointer';
-        topArea.on('pointerdown', () => this.transitionToThankYou());
+        topArea.on('pointerdown', () => this.transitionToDayTwo());
         this.container.addChild(topArea);
         this.clickableElements.push(topArea);
         // Make asset 4 and 5 clickable by finding them in layeredSprites

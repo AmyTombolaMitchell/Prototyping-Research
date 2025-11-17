@@ -132,7 +132,7 @@ export class IntroScene implements IScene {
       if (asset1Texture) {
         const sprite = new Sprite(asset1Texture);
         sprite.anchor.set(0.5);
-  sprite.scale.set(0.75);
+          sprite.scale.set(0.75);
         sprite.x = this.canvasWidth / 2;
         sprite.y = 200;
         this.container.addChild(sprite);
@@ -146,7 +146,7 @@ export class IntroScene implements IScene {
       if (asset2Texture) {
         const sprite = new Sprite(asset2Texture);
         sprite.anchor.set(0.5);
-  sprite.scale.set(0.75);
+          sprite.scale.set(0.75);
   console.log('[IntroScene] Banner created:', sprite.texture, 'scale:', sprite.scale.x);
         sprite.x = 180;
         sprite.y = 380;
@@ -161,7 +161,7 @@ export class IntroScene implements IScene {
       if (asset3Texture) {
         const sprite = new Sprite(asset3Texture);
         sprite.anchor.set(0.5);
-        sprite.scale.set(0.75);
+          sprite.scale.set(0.75);
         sprite.x = this.canvasWidth - 150;
         sprite.y = 450;
         this.container.addChild(sprite);
@@ -175,7 +175,7 @@ export class IntroScene implements IScene {
       if (asset4Texture) {
         const sprite = new Sprite(asset4Texture);
         sprite.anchor.set(0.5);
-        sprite.scale.set(0.75);
+          sprite.scale.set(0.75);
         sprite.x = (this.canvasWidth / 2) - 80;
         sprite.y = 620;
         this.container.addChild(sprite);
@@ -189,7 +189,7 @@ export class IntroScene implements IScene {
       if (asset5Texture) {
         const sprite = new Sprite(asset5Texture);
         sprite.anchor.set(0.5);
-        sprite.scale.set(0.75);
+          sprite.scale.set(0.75);
         sprite.x = this.canvasWidth - 120;
         sprite.y = 700;
         this.container.addChild(sprite);

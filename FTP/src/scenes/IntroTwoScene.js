@@ -99,14 +99,33 @@ export class IntroTwoScene {
             this.container.addChild(bg);
             this.layeredSprites.push(bg);
         }
-        // Add TOP_BANNER at the top - using no_0 banner
+        // ...existing code for other sprites...
+        // Add banners LAST so they are guaranteed to be on top
+        // TOP_BANNER
         const topBannerTexture = Assets.get('BANNER_NO_0');
         console.log('[IntroTwoScene] BANNER_NO_0 texture:', topBannerTexture);
         if (topBannerTexture) {
             const banner = new Sprite(topBannerTexture);
-            banner.anchor.set(0.5, 0); // Anchor at top center
+            banner.anchor.set(0.5, 0);
             banner.x = this.canvasWidth / 2;
-            banner.y = 0; // At the very top
+            banner.y = 0;
+            banner.scale.set(0.75);
+            banner.eventMode = 'static';
+            banner.cursor = 'pointer';
+            banner.zIndex = 1000;
+            banner.on('pointerdown', async () => {
+                if (this.isTransitioning)
+                    return;
+                this.isTransitioning = true;
+                banner.eventMode = 'none';
+                banner.cursor = 'default';
+                console.log('[IntroTwoScene] Top banner clicked! Transitioning to DAY TWO...');
+                const sceneManager = window.sceneManager;
+                if (sceneManager) {
+                    const { DayTwoScene } = await import('./DayTwoScene');
+                    await sceneManager.change(new DayTwoScene(), 'none');
+                }
+            });
             this.container.addChild(banner);
             this.layeredSprites.push(banner);
             console.log('[IntroTwoScene] Banner added successfully at position', banner.x, banner.y);
@@ -114,6 +133,42 @@ export class IntroTwoScene {
         else {
             console.warn('[IntroTwoScene] BANNER_NO_0 texture not found!');
         }
+        // BOTTOM_BANNER
+        const bottomBannerTexture = Assets.get('PAGE6_BOTTOM_BANNER');
+        if (bottomBannerTexture) {
+            const bottomBanner = new Sprite(bottomBannerTexture);
+            bottomBanner.anchor.set(0.5, 1);
+            bottomBanner.x = this.canvasWidth / 2;
+            bottomBanner.y = this.canvasHeight;
+            bottomBanner.scale.set(1.0);
+            bottomBanner.eventMode = 'static';
+            bottomBanner.cursor = 'pointer';
+            bottomBanner.zIndex = 1000;
+            bottomBanner.on('pointerdown', async (event) => {
+                if (event && event.stopPropagation)
+                    event.stopPropagation();
+                if (event && event.preventDefault)
+                    event.preventDefault();
+                if (this.isTransitioning)
+                    return;
+                this.isTransitioning = true;
+                bottomBanner.eventMode = 'none';
+                bottomBanner.cursor = 'default';
+                console.log('[IntroTwoScene] Bottom banner clicked! Transitioning to DAY TWO...');
+                const sceneManager = window.sceneManager;
+                if (sceneManager) {
+                    const { DayTwoScene } = await import('./DayTwoScene');
+                    await sceneManager.change(new DayTwoScene(), 'none');
+                }
+            });
+            this.container.addChild(bottomBanner);
+            this.layeredSprites.push(bottomBanner);
+            console.log('[IntroTwoScene] Bottom banner added successfully at position', bottomBanner.x, bottomBanner.y);
+        }
+        // Ensure banners are on top
+        this.container.sortChildren();
+        // Add BOTTOM_BANNER at the bottom (if present)
+        // ...existing code...
         // Add asset 7 (lady) from PAGE 1 - same position and size as page 1
         const ladyTexture = Assets.get('INTRO_7');
         if (ladyTexture) {

@@ -108,9 +108,10 @@ export class DiceRollScene {
             this.topBanner.anchor.set(0.5, 0);
             this.topBanner.x = this.canvasWidth / 2;
             this.topBanner.y = 0;
+            this.topBanner.scale.set(0.75); // Ensure consistent banner size
+            console.log('[DiceRollScene] Banner created:', this.topBanner.texture, 'scale:', this.topBanner.scale.x);
             this.container.addChild(this.topBanner);
             this.layeredSprites.push(this.topBanner);
-            console.log('[DiceRollScene] Banner added at', this.topBanner.x, this.topBanner.y);
         }
         else {
             console.warn('[DiceRollScene] BANNER_NO_0 texture not found!');
@@ -180,6 +181,7 @@ export class DiceRollScene {
         }
         if (bannerTexture) {
             this.topBanner.texture = bannerTexture;
+            this.topBanner.scale.set(0.75); // Ensure updated banner is the same size
             console.log(`[DiceRollScene] Updated banner to position ${positionIndex}`);
         }
         else {

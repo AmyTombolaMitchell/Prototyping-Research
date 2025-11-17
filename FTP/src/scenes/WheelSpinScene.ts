@@ -39,6 +39,7 @@ export class WheelSpinScene implements IScene {
       this.topBanner.anchor.set(0.5, 0);
       this.topBanner.x = this.canvasWidth / 2;
       this.topBanner.y = 0;
+      this.topBanner.scale.set(0.75); // Consistent banner size
       this.container.addChild(this.topBanner);
       this.layeredSprites.push(this.topBanner);
       console.log('[WheelSpinScene] Banner added at', this.topBanner.x, this.topBanner.y);

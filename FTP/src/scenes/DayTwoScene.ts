@@ -108,7 +108,12 @@ export class DayTwoScene {
       this.avatar.y = pos.y;
       this.scrollContainer.addChild(this.avatar);
       this.layeredSprites.push(this.avatar);
-      console.log('[DayTwoScene] Avatar added at position', this.currentPosition, ':', this.avatar.x, this.avatar.y);
+      console.log('[DayTwoScene] Avatar created and positioned:', {
+        currentPosition: this.currentPosition,
+        x: this.avatar.x,
+        y: this.avatar.y,
+        pathPositions: this.pathPositions
+      });
     }
 
     // Add drag interaction
@@ -227,7 +232,9 @@ export class DayTwoScene {
     if (!this.avatar) return;
 
     for (let i = 1; i < this.pathPositions.length; i++) {
+      console.log(`[DayTwoScene] Moving avatar to position ${i}:`, this.pathPositions[i]);
       await this.jumpToPosition(i);
+      console.log(`[DayTwoScene] Avatar now at: x=${this.avatar?.x}, y=${this.avatar?.y}`);
       await this.wait(200);
     }
     
