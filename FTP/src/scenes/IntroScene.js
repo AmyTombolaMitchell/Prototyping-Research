@@ -224,7 +224,7 @@ export class IntroScene {
                     // Disable button immediately
                     sprite.eventMode = 'none';
                     sprite.cursor = 'default';
-                    console.log('[IntroScene] Asset 6 clicked! Transitioning to PAGE 2...');
+                    console.log('[IntroScene] Asset 6 clicked! Transitioning to page2...');
                     const sceneManager = window.sceneManager;
                     if (sceneManager) {
                         const { IntroTwoScene } = await import('./IntroTwoScene');

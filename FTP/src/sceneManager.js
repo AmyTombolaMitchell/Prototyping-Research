@@ -26,7 +26,6 @@ export class SceneManager {
     async change(sceneOrName, transition = 'slide') {
         console.log('[SceneManager] Changing scene with transition:', transition);
         const oldScene = this.current;
-        
         // Get scene either from parameter or from registry
         let scene;
         if (typeof sceneOrName === 'string') {
@@ -36,10 +35,10 @@ export class SceneManager {
                 return;
             }
             scene = registeredScene;
-        } else {
+        }
+        else {
             scene = sceneOrName;
         }
-        
         // Add new scene
         this.current = scene;
         this.root.addChild(scene.container);

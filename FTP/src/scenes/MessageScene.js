@@ -52,7 +52,7 @@ export class MessageScene {
     }
     async init() {
         console.log('[MessageScene] Starting init');
-        // Add BACKGROUND from PAGE 1
+        // Add BACKGROUND from page1
         const bgTexture = Assets.get('INTRO_BG');
         if (bgTexture) {
             const bg = new Sprite(bgTexture);
@@ -62,7 +62,7 @@ export class MessageScene {
             this.container.addChild(bg);
             this.layeredSprites.push(bg);
         }
-        // Add TOP_BANNER_AFTER from PAGE 4 - using no_25 banner
+        // Add TOP_BANNER_AFTER from page4 - using no_25 banner
         const topBannerTexture = Assets.get('BANNER_NO_25');
         console.log('[MessageScene] BANNER_NO_25 texture:', topBannerTexture);
         if (topBannerTexture) {
@@ -70,14 +70,14 @@ export class MessageScene {
             banner.anchor.set(0.5, 0);
             banner.x = this.canvasWidth / 2;
             banner.y = 0;
-            banner.scale.set(0.75); // Make it a tiny bit bigger
             this.container.addChild(banner);
             this.layeredSprites.push(banner);
             console.log('[MessageScene] Banner added at', banner.x, banner.y);
-        } else {
+        }
+        else {
             console.warn('[MessageScene] BANNER_NO_25 texture not found!');
         }
-        // Add Asset 7 (lady) from PAGE 1 in same location
+        // Add Asset 7 (lady) from page1 in same location
         const ladyTexture = Assets.get('INTRO_7');
         if (ladyTexture) {
             const lady = new Sprite(ladyTexture);
@@ -93,52 +93,8 @@ export class MessageScene {
         }
         // Now show the message sequence
         await this.showMessageSequence();
-        
         this.ready = true;
-        console.log('[MessageScene] Ready - click anywhere to continue to Day Two');
-        
-        // Make the entire container clickable immediately
-        this.container.eventMode = 'static';
-        this.container.cursor = 'pointer';
-        
-        // Add click handler
-        const clickHandler = async () => {
-            console.log('[MessageScene] Clicked - transitioning to Day Two');
-            this.container.off('pointerdown', clickHandler);
-            
-            // Fade everything to black before transitioning
-            const fadeOutDuration = 1000;
-            const startTime = Date.now();
-            await new Promise((resolve) => {
-                const animate = () => {
-                    const elapsed = Date.now() - startTime;
-                    const progress = Math.min(1, elapsed / fadeOutDuration);
-                    
-                    // Fade out all sprites
-                    for (const sprite of this.layeredSprites) {
-                        sprite.alpha = 1 - progress;
-                    }
-                    for (const msg of this.messages) {
-                        msg.alpha = 1 - progress;
-                    }
-                    
-                    if (progress < 1) {
-                        requestAnimationFrame(animate);
-                    } else {
-                        resolve();
-                    }
-                };
-                animate();
-            });
-            
-            // Transition to Day Two scene
-            if (window.sceneManager) {
-                await this.wait(500);
-                window.sceneManager.change('DayTwoScene', 'fade');
-            }
-        };
-        
-        this.container.on('pointerdown', clickHandler);
+        console.log('[MessageScene] Init complete');
     }
     async fadeIn(sprite) {
         return new Promise((resolve) => {
@@ -197,8 +153,8 @@ export class MessageScene {
         }
         // Wait for both to complete together
         await Promise.all(promises);
-        
-        // No longer adding clickable areas here - handled in init()
+        // Add clickable areas
+        this.addClickableAreas();
     }
     async transitionToThankYou() {
         if (this.isTransitioning)

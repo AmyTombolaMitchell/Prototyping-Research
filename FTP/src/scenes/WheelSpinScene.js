@@ -82,7 +82,7 @@ export class WheelSpinScene {
     }
     async init() {
         console.log('[WheelSpinScene] Starting init');
-        // Add PAGE 4 background
+        // Add page4 background
         const bgTexture = Assets.get('PAGE4_BG');
         if (bgTexture) {
             const bg = new Sprite(bgTexture);
@@ -92,7 +92,7 @@ export class WheelSpinScene {
             this.container.addChild(bg);
             this.layeredSprites.push(bg);
         }
-        // Add TOP_BANNER from PAGE 3 at the top - start with no_5 banner
+        // Add TOP_BANNER from page3 at the top - start with no_5 banner
         const topBannerTexture = Assets.get('BANNER_NO_5');
         console.log('[WheelSpinScene] BANNER_NO_5 texture:', topBannerTexture);
         if (topBannerTexture) {
@@ -100,11 +100,11 @@ export class WheelSpinScene {
             this.topBanner.anchor.set(0.5, 0);
             this.topBanner.x = this.canvasWidth / 2;
             this.topBanner.y = 0;
-            this.topBanner.scale.set(0.75); // Make it a tiny bit bigger
             this.container.addChild(this.topBanner);
             this.layeredSprites.push(this.topBanner);
             console.log('[WheelSpinScene] Banner added at', this.topBanner.x, this.topBanner.y);
-        } else {
+        }
+        else {
             console.warn('[WheelSpinScene] BANNER_NO_5 texture not found!');
         }
         // Add WHEELBACKGROUND in lower middle
@@ -287,12 +287,11 @@ export class WheelSpinScene {
         });
     }
     async showWinResult() {
-        // Change banner to no_25
+        // Change banner to no_25 banner when winning tokens
         if (this.topBanner) {
             const afterBannerTexture = Assets.get('BANNER_NO_25');
             if (afterBannerTexture) {
                 this.topBanner.texture = afterBannerTexture;
-                console.log('[WheelSpinScene] Banner changed to BANNER_NO_25');
             }
         }
         // Create pulsing white spotlight behind where coins will appear
@@ -332,12 +331,12 @@ export class WheelSpinScene {
         this.elementsToDestroy.push(winText);
         // Pop in animation for text
         await this.popIn(winText);
-        // Wait a few seconds then auto-transition to PAGE 5
+        // Wait a few seconds then auto-transition to page5
         await this.wait(3000);
         if (this.isTransitioning)
             return; // Prevent double-transition
         this.isTransitioning = true;
-        console.log('[WheelSpinScene] Auto-transitioning to PAGE 5...');
+        console.log('[WheelSpinScene] Auto-transitioning to page5...');
         const sceneManager = window.sceneManager;
         if (sceneManager) {
             const { MessageScene } = await import('./MessageScene');

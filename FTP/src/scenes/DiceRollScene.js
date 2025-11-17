@@ -43,12 +43,6 @@ export class DiceRollScene {
             writable: true,
             value: null
         });
-        Object.defineProperty(this, "topBanner", {
-            enumerable: true,
-            configurable: true,
-            writable: true,
-            value: null
-        });
         Object.defineProperty(this, "spotlight", {
             enumerable: true,
             configurable: true,
@@ -73,6 +67,12 @@ export class DiceRollScene {
             writable: true,
             value: []
         });
+        Object.defineProperty(this, "topBanner", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: null
+        }); // Track the banner so we can update it
         // Path positions for avatar movement
         Object.defineProperty(this, "pathPositions", {
             enumerable: true,
@@ -90,7 +90,7 @@ export class DiceRollScene {
     }
     async init() {
         console.log('[DiceRollScene] Starting init');
-        // Add PAGE 3 background
+        // Add page3 background
         const bgTexture = Assets.get('PAGE3_BG');
         if (bgTexture) {
             const bg = new Sprite(bgTexture);
@@ -108,11 +108,11 @@ export class DiceRollScene {
             this.topBanner.anchor.set(0.5, 0);
             this.topBanner.x = this.canvasWidth / 2;
             this.topBanner.y = 0;
-            this.topBanner.scale.set(0.75); // Make it a tiny bit bigger
             this.container.addChild(this.topBanner);
             this.layeredSprites.push(this.topBanner);
             console.log('[DiceRollScene] Banner added at', this.topBanner.x, this.topBanner.y);
-        } else {
+        }
+        else {
             console.warn('[DiceRollScene] BANNER_NO_0 texture not found!');
         }
         // Add AVATAR at starting position
@@ -130,12 +130,12 @@ export class DiceRollScene {
         await this.animateDiceRoll();
         // After dice roll, move avatar along the path
         await this.moveAvatarAlongPath();
-        // Wait 3 seconds then auto-transition to PAGE 4
+        // Wait 3 seconds then auto-transition to page4
         await this.wait(3000);
         if (this.isTransitioning)
             return; // Prevent double-transition
         this.isTransitioning = true;
-        console.log('[DiceRollScene] Auto-transitioning to PAGE 4...');
+        console.log('[DiceRollScene] Auto-transitioning to page4...');
         const sceneManager = window.sceneManager;
         if (sceneManager) {
             const { WheelSpinScene } = await import('./WheelSpinScene');
@@ -152,8 +152,38 @@ export class DiceRollScene {
         // Move through positions 1-5 (skipping 0 which is the starting position)
         for (let i = 1; i < this.pathPositions.length; i++) {
             await this.jumpToPosition(i);
-            this.updateBanner(i); // Update banner after each position
+            this.updateBanner(i); // Update banner when landing on each position
             await this.wait(200); // Reduced from 450ms to 200ms
+        }
+    }
+    updateBanner(positionIndex) {
+        if (!this.topBanner)
+            return;
+        // Map position to banner (positions 1-5 use banners no_1 to no_5)
+        let bannerTexture;
+        switch (positionIndex) {
+            case 1:
+                bannerTexture = Assets.get('BANNER_NO_1');
+                break;
+            case 2:
+                bannerTexture = Assets.get('BANNER_NO_2');
+                break;
+            case 3:
+                bannerTexture = Assets.get('BANNER_NO_3');
+                break;
+            case 4:
+                bannerTexture = Assets.get('BANNER_NO_4');
+                break;
+            case 5:
+                bannerTexture = Assets.get('BANNER_NO_5');
+                break;
+        }
+        if (bannerTexture) {
+            this.topBanner.texture = bannerTexture;
+            console.log(`[DiceRollScene] Updated banner to position ${positionIndex}`);
+        }
+        else {
+            console.warn(`[DiceRollScene] Banner texture not found for position ${positionIndex}`);
         }
     }
     async jumpToPosition(positionIndex) {
@@ -194,32 +224,6 @@ export class DiceRollScene {
             };
             requestAnimationFrame(animate);
         });
-    }
-    updateBanner(positionIndex) {
-        if (!this.topBanner)
-            return;
-        let bannerTexture;
-        switch (positionIndex) {
-            case 1:
-                bannerTexture = Assets.get('BANNER_NO_1');
-                break;
-            case 2:
-                bannerTexture = Assets.get('BANNER_NO_2');
-                break;
-            case 3:
-                bannerTexture = Assets.get('BANNER_NO_3');
-                break;
-            case 4:
-                bannerTexture = Assets.get('BANNER_NO_4');
-                break;
-            case 5:
-                bannerTexture = Assets.get('BANNER_NO_5');
-                break;
-        }
-        if (bannerTexture) {
-            this.topBanner.texture = bannerTexture;
-            console.log('[DiceRollScene] Banner updated to position', positionIndex);
-        }
     }
     showSpotlight() {
         if (!this.avatar)

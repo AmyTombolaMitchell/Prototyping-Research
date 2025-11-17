@@ -107,11 +107,11 @@ export class IntroTwoScene {
             banner.anchor.set(0.5, 0); // Anchor at top center
             banner.x = this.canvasWidth / 2;
             banner.y = 0; // At the very top
-            banner.scale.set(0.75); // Make it a tiny bit bigger
             this.container.addChild(banner);
             this.layeredSprites.push(banner);
             console.log('[IntroTwoScene] Banner added successfully at position', banner.x, banner.y);
-        } else {
+        }
+        else {
             console.warn('[IntroTwoScene] BANNER_NO_0 texture not found!');
         }
         // Add asset 7 (lady) from PAGE 1 - same position and size as page 1
