@@ -44,13 +44,13 @@ export class DiceRollScene implements IScene {
     const topBannerTexture = Assets.get('BANNER_NO_0');
     console.log('[DiceRollScene] BANNER_NO_0 texture:', topBannerTexture);
     if (topBannerTexture) {
-      this.topBanner = new Sprite(topBannerTexture);
-      this.topBanner.anchor.set(0.5, 0);
-      this.topBanner.x = this.canvasWidth / 2;
-      this.topBanner.y = 0;
-      this.container.addChild(this.topBanner);
-      this.layeredSprites.push(this.topBanner);
-      console.log('[DiceRollScene] Banner added at', this.topBanner.x, this.topBanner.y);
+  this.topBanner = new Sprite(topBannerTexture);
+  this.topBanner.anchor.set(0.5, 0);
+  this.topBanner.x = this.canvasWidth / 2;
+  this.topBanner.y = 0;
+  console.log('[DiceRollScene] Banner created:', this.topBanner.texture, 'scale:', this.topBanner.scale.x);
+  this.container.addChild(this.topBanner);
+  this.layeredSprites.push(this.topBanner);
     } else {
       console.warn('[DiceRollScene] BANNER_NO_0 texture not found!');
     }

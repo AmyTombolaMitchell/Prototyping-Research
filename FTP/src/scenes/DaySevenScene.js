@@ -74,13 +74,14 @@ export class DaySevenScene {
     // Add TOP BANNER (BANNER_NO_0)
     const topBannerTexture = Assets.get('BANNER_NO_0');
     if (topBannerTexture) {
-      this.topBanner = new Sprite(topBannerTexture);
-      this.topBanner.anchor.set(0.5, 0);
-      this.topBanner.x = this.canvasWidth / 2;
-      this.topBanner.y = 0;
-      this.topBanner.scale.set(0.75);
-      this.container.addChild(this.topBanner);
-      this.layeredSprites.push(this.topBanner);
+  this.topBanner = new Sprite(topBannerTexture);
+  this.topBanner.anchor.set(0.5, 0);
+  this.topBanner.x = this.canvasWidth / 2;
+  this.topBanner.y = 0;
+  this.topBanner.scale.set(0.75);
+  console.log('[DaySevenScene] Banner created:', this.topBanner.texture, 'scale:', this.topBanner.scale.x);
+  this.container.addChild(this.topBanner);
+  this.layeredSprites.push(this.topBanner);
 
       // Remember desired display width so all future banners match this size
       this.topBannerTargetWidth = this.topBanner.width;

@@ -132,7 +132,7 @@ export class IntroScene implements IScene {
       if (asset1Texture) {
         const sprite = new Sprite(asset1Texture);
         sprite.anchor.set(0.5);
-        sprite.scale.set(0.8);
+  sprite.scale.set(0.75);
         sprite.x = this.canvasWidth / 2;
         sprite.y = 200;
         this.container.addChild(sprite);
@@ -146,7 +146,8 @@ export class IntroScene implements IScene {
       if (asset2Texture) {
         const sprite = new Sprite(asset2Texture);
         sprite.anchor.set(0.5);
-        sprite.scale.set(0.75);
+  sprite.scale.set(0.75);
+  console.log('[IntroScene] Banner created:', sprite.texture, 'scale:', sprite.scale.x);
         sprite.x = 180;
         sprite.y = 380;
         this.container.addChild(sprite);

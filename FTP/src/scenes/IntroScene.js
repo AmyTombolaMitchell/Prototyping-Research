@@ -146,7 +146,7 @@ export class IntroScene {
             if (asset1Texture) {
                 const sprite = new Sprite(asset1Texture);
                 sprite.anchor.set(0.5);
-                sprite.scale.set(0.8);
+                sprite.scale.set(0.75);
                 sprite.x = this.canvasWidth / 2;
                 sprite.y = 200;
                 this.container.addChild(sprite);

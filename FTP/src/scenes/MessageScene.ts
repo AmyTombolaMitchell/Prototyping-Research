@@ -29,13 +29,14 @@ export class MessageScene implements IScene {
     const topBannerTexture = Assets.get('BANNER_NO_25');
     console.log('[MessageScene] BANNER_NO_25 texture:', topBannerTexture);
     if (topBannerTexture) {
-      const banner = new Sprite(topBannerTexture);
-      banner.anchor.set(0.5, 0);
-      banner.x = this.canvasWidth / 2;
-      banner.y = 0;
-      this.container.addChild(banner);
-      this.layeredSprites.push(banner);
-      console.log('[MessageScene] Banner added at', banner.x, banner.y);
+  const banner = new Sprite(topBannerTexture);
+  banner.anchor.set(0.5, 0);
+  banner.x = this.canvasWidth / 2;
+  banner.y = 0;
+  banner.scale.set(0.5); // Lower scale to 50%
+  console.log('[MessageScene] Banner created:', banner.texture, 'scale:', banner.scale.x);
+  this.container.addChild(banner);
+  this.layeredSprites.push(banner);
     } else {
       console.warn('[MessageScene] BANNER_NO_25 texture not found!');
     }
@@ -153,7 +154,8 @@ export class MessageScene implements IScene {
   }
   
   private addClickableAreas() {
-    // Create clickable area at bottom (0-100px height, full width)
+  console.log('[MessageScene] addClickableAreas() called');
+  // Create clickable area at bottom (0-100px height, full width)
     const bottomArea = new Graphics();
     bottomArea.rect(0, this.canvasHeight - 100, this.canvasWidth, 100);
     bottomArea.fill({ color: 0x000000, alpha: 0.01 }); // Nearly invisible
@@ -181,13 +183,34 @@ export class MessageScene implements IScene {
       if (asset4Texture && sprite.texture === asset4Texture) {
         sprite.eventMode = 'static';
         sprite.cursor = 'pointer';
-        sprite.on('pointerdown', () => this.transitionToThankYou());
+        sprite.on('pointerdown', () => {
+          console.log('[MessageScene] Asset 4 clicked! Transitioning to Day Two...');
+          this.transitionToDayTwo();
+        });
       }
       if (asset5Texture && sprite.texture === asset5Texture) {
         sprite.eventMode = 'static';
         sprite.cursor = 'pointer';
-        sprite.on('pointerdown', () => this.transitionToThankYou());
+        sprite.on('pointerdown', () => {
+          console.log('[MessageScene] Asset 5 clicked! Transitioning to Day Two...');
+          this.transitionToDayTwo();
+        });
       }
+    }
+  }
+
+  private async transitionToDayTwo() {
+    if (this.isTransitioning) return;
+    this.isTransitioning = true;
+    this.clickableElements.forEach(el => {
+      el.eventMode = 'none';
+      el.cursor = 'default';
+    });
+    console.log('[MessageScene] Transitioning to Day Two...');
+    const sceneManager = (window as any).sceneManager;
+    if (sceneManager) {
+      const { DayTwoScene } = await import('./DayTwoScene');
+      await sceneManager.change(new DayTwoScene(), 'none');
     }
   }
   

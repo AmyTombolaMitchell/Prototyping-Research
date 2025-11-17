@@ -24,10 +24,15 @@ export class DayTwoScene {
     { x: 257, y: 2076 }   // Position 5
   ];
   private currentPosition = 0;
+
+  constructor(lastPosition: number = 0) {
+    this.currentPosition = lastPosition;
+  }
   private diceButton: Sprite | null = null;
   private diceRolling = false;
 
   async init() {
+  console.log('[DayTwoScene] Init: canvas', this.canvasWidth, this.canvasHeight);
     console.log('[DayTwoScene] Starting init');
     this.container.removeChildren();
     this.layeredSprites = [];
@@ -70,13 +75,14 @@ export class DayTwoScene {
     // Add TOP BANNER (same as previous page - BANNER_NO_25)
     const topBannerTexture = Assets.get('BANNER_NO_25');
     if (topBannerTexture) {
-      const topBanner = new Sprite(topBannerTexture);
-      topBanner.anchor.set(0.5, 0);
-      topBanner.x = this.canvasWidth / 2;
-      topBanner.y = 0;
-      topBanner.scale.set(0.75);
-      this.container.addChild(topBanner);
-      this.layeredSprites.push(topBanner);
+  const topBanner = new Sprite(topBannerTexture);
+  topBanner.anchor.set(0.5, 0);
+  topBanner.x = this.canvasWidth / 2;
+  topBanner.y = 0;
+  topBanner.scale.set(0.75);
+  console.log('[DayTwoScene] Banner created:', topBanner.texture, 'scale:', topBanner.scale.x);
+  this.container.addChild(topBanner);
+  this.layeredSprites.push(topBanner);
     }
 
     // Add BOTTOM_BANNER at the bottom
@@ -91,17 +97,18 @@ export class DayTwoScene {
       this.layeredSprites.push(bottomBanner);
     }
 
-    // Add AVATAR at position 5 from previous scene (inside scrollContainer so it scrolls with background)
+    // Add AVATAR at last position from previous round (inside scrollContainer so it scrolls with background)
     const avatarTexture = Assets.get('PAGE3_AVATAR');
     if (avatarTexture && this.scrollContainer) {
       this.avatar = new Sprite(avatarTexture);
       this.avatar.anchor.set(0.5, 1);
       this.avatar.scale.set(0.75);
-      this.avatar.x = 315; // Position 5 from DiceRollScene
-      this.avatar.y = 664;
+      const pos = this.pathPositions[this.currentPosition];
+      this.avatar.x = pos.x;
+      this.avatar.y = pos.y;
       this.scrollContainer.addChild(this.avatar);
       this.layeredSprites.push(this.avatar);
-      console.log('[DayTwoScene] Avatar added at position 5:', this.avatar.x, this.avatar.y);
+      console.log('[DayTwoScene] Avatar added at position', this.currentPosition, ':', this.avatar.x, this.avatar.y);
     }
 
     // Add drag interaction
@@ -118,17 +125,31 @@ export class DayTwoScene {
   }
 
   private async showDiceButton() {
-    const diceTexture = Assets.get('PAGE3_DICE');
-    if (!diceTexture) return;
+  console.log('[DayTwoScene] Showing roll dice button');
+    // Use asset 2 from PAGE 2 for roll button
+    const rollButtonTexture = Assets.get('INTRO2_2');
+    if (!rollButtonTexture) return;
 
-    this.diceButton = new Sprite(diceTexture);
+    this.diceButton = new Sprite(rollButtonTexture);
     this.diceButton.anchor.set(0.5);
     this.diceButton.x = this.canvasWidth / 2;
     this.diceButton.y = this.canvasHeight - 200;
-    this.diceButton.scale.set(1.0);
+    this.diceButton.scale.set(0.8); // Slightly smaller
     this.diceButton.eventMode = 'static';
     this.diceButton.cursor = 'pointer';
     this.container.addChild(this.diceButton);
+
+    // Place dice to the right of roll button, smaller
+    const diceTexture = Assets.get('PAGE3_DICE');
+    let diceSprite: Sprite | null = null;
+    if (diceTexture) {
+      diceSprite = new Sprite(diceTexture);
+      diceSprite.anchor.set(0.5);
+      diceSprite.x = this.diceButton.x + 80; // To the right
+      diceSprite.y = this.diceButton.y;
+      diceSprite.scale.set(0.6); // Smaller dice
+      this.container.addChild(diceSprite);
+    }
 
     this.diceButton.on('pointerdown', async () => {
       if (this.diceRolling) return;
@@ -137,6 +158,10 @@ export class DayTwoScene {
       if (this.diceButton) {
         this.container.removeChild(this.diceButton);
         this.diceButton = null;
+      }
+      if (diceSprite) {
+        this.container.removeChild(diceSprite);
+        diceSprite = null;
       }
       
       await this.animateDiceRoll();
@@ -147,6 +172,7 @@ export class DayTwoScene {
   }
 
   private async animateDiceRoll() {
+  console.log('[DayTwoScene] Animating dice roll');
     const diceTexture = Assets.get('PAGE3_DICE');
     if (!diceTexture) return;
 
@@ -197,6 +223,7 @@ export class DayTwoScene {
   }
 
   private async moveAvatarAlongPath() {
+  console.log('[DayTwoScene] Moving avatar along path');
     if (!this.avatar) return;
 
     for (let i = 1; i < this.pathPositions.length; i++) {
