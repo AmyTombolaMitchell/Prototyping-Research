@@ -14,6 +14,9 @@ import { ThankYouScene } from './scenes/ThankYouScene';
 // import { FinishSequenceScene } from './scenes/FinishSequenceScene';
 import { ASSETS } from './assets';
 
+// Version tracking for debugging
+console.log('[VERSION] Build: 2025-11-17-v2 - Full game flow with Day 30 scene');
+
 // Banner assets added - force reload
 console.log('[main.ts] ASSETS object keys:', Object.keys(ASSETS).length);
 
