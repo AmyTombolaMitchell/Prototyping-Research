@@ -203,6 +203,22 @@ export class DayTwoScene {
       await this.jumpToPosition(i);
       await this.wait(200);
     }
+    
+    // After avatar reaches end of path, transition to Token Shop scene
+    console.log('[DayTwoScene] Avatar reached end of path - transitioning to Token Shop');
+    await this.wait(1000);
+    await this.transitionToTokenShop();
+  }
+  
+  private async transitionToTokenShop() {
+    const sceneManager = (window as any).sceneManager;
+    if (!sceneManager) {
+      console.warn('[DayTwoScene] No scene manager available');
+      return;
+    }
+    
+    const { TokenShopTransition } = await import('./TokenShopTransition.js');
+    await sceneManager.change(new TokenShopTransition(), 'none');
   }
 
   private async jumpToPosition(positionIndex: number) {

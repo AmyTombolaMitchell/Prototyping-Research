@@ -100,11 +100,11 @@ export class WheelSpinScene {
             this.topBanner.anchor.set(0.5, 0);
             this.topBanner.x = this.canvasWidth / 2;
             this.topBanner.y = 0;
-            this.topBanner.scale.set(0.75); // Make it a tiny bit bigger
             this.container.addChild(this.topBanner);
             this.layeredSprites.push(this.topBanner);
             console.log('[WheelSpinScene] Banner added at', this.topBanner.x, this.topBanner.y);
-        } else {
+        }
+        else {
             console.warn('[WheelSpinScene] BANNER_NO_5 texture not found!');
         }
         // Add WHEELBACKGROUND in lower middle
@@ -287,12 +287,11 @@ export class WheelSpinScene {
         });
     }
     async showWinResult() {
-        // Change banner to no_25
+        // Change banner to no_25 banner when winning tokens
         if (this.topBanner) {
             const afterBannerTexture = Assets.get('BANNER_NO_25');
             if (afterBannerTexture) {
                 this.topBanner.texture = afterBannerTexture;
-                console.log('[WheelSpinScene] Banner changed to BANNER_NO_25');
             }
         }
         // Create pulsing white spotlight behind where coins will appear
