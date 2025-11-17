@@ -220,7 +220,7 @@ export class IntroScene {
                 asset6Sprite = new Sprite(asset6Texture);
                 asset6Sprite.anchor.set(0.5);
                 asset6Sprite.scale.set(0.7);
-                asset6Sprite.x = 350;
+                asset6Sprite.x = 390; // Moved more to the right (was 350)
                 asset6Sprite.y = this.canvasHeight - 150;
                 // Initially not interactive
                 asset6Sprite.eventMode = 'none';

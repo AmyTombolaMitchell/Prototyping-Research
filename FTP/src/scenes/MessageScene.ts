@@ -155,25 +155,6 @@ export class MessageScene implements IScene {
   
   private addClickableAreas() {
   console.log('[MessageScene] addClickableAreas() called');
-  // Create clickable area at bottom (0-100px height, full width)
-    const bottomArea = new Graphics();
-    bottomArea.rect(0, this.canvasHeight - 100, this.canvasWidth, 100);
-    bottomArea.fill({ color: 0x000000, alpha: 0.01 }); // Nearly invisible
-    bottomArea.eventMode = 'static';
-    bottomArea.cursor = 'pointer';
-  bottomArea.on('pointerdown', () => this.transitionToDayTwo());
-    this.container.addChild(bottomArea);
-    this.clickableElements.push(bottomArea);
-    
-    // Create clickable area at top (0-250px from top, full width)
-    const topArea = new Graphics();
-    topArea.rect(0, 0, this.canvasWidth, 250);
-    topArea.fill({ color: 0x000000, alpha: 0.01 }); // Nearly invisible
-    topArea.eventMode = 'static';
-    topArea.cursor = 'pointer';
-  topArea.on('pointerdown', () => this.transitionToDayTwo());
-    this.container.addChild(topArea);
-    this.clickableElements.push(topArea);
     
     // Make asset 4 and 5 clickable by finding them in layeredSprites
     const asset4Texture = Assets.get('PAGE5_4');
