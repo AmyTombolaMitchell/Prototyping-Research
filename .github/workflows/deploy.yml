@@ -5,6 +5,7 @@ on:
     branches:
       - main
       - dev
+      - a
 
 jobs:
   build-and-deploy:
@@ -45,3 +46,4 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
+
