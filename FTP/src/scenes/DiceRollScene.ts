@@ -77,10 +77,11 @@ export class DiceRollScene implements IScene {
     if (this.isTransitioning) return; // Prevent double-transition
     this.isTransitioning = true;
 
-    console.log('[DiceRollScene] Auto-transitioning to PAGE 4...');
+    console.log('[DiceRollScene] Auto-transitioning to WheelSpinScene (PAGE 4)...');
     const sceneManager = (window as any).sceneManager;
     if (sceneManager) {
       const { WheelSpinScene } = await import('./WheelSpinScene');
+      console.log('[SCENE TRANSITION] DiceRollScene → WheelSpinScene');
       await sceneManager.change(new WheelSpinScene(), 'none');
     }
 

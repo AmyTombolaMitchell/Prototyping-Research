@@ -336,10 +336,11 @@ export class WheelSpinScene {
         if (this.isTransitioning)
             return; // Prevent double-transition
         this.isTransitioning = true;
-        console.log('[WheelSpinScene] Auto-transitioning to PAGE 5...');
+        console.log('[WheelSpinScene] Auto-transitioning to MessageScene (PAGE 5)...');
         const sceneManager = window.sceneManager;
         if (sceneManager) {
             const { MessageScene } = await import('./MessageScene');
+            console.log('[SCENE TRANSITION] WheelSpinScene → MessageScene');
             await sceneManager.change(new MessageScene(), 'none');
         }
     }

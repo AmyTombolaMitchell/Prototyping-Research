@@ -28,6 +28,7 @@ export class SceneManager {
         const oldScene = this.current;
         // Get scene either from parameter or from registry
         let scene;
+        let sceneName = 'Unknown';
         if (typeof sceneOrName === 'string') {
             const registeredScene = this.scenes.get(sceneOrName);
             if (!registeredScene) {
@@ -35,10 +36,13 @@ export class SceneManager {
                 return;
             }
             scene = registeredScene;
+            sceneName = sceneOrName;
         }
         else {
             scene = sceneOrName;
+            sceneName = scene.constructor.name;
         }
+        console.log(`[SceneManager] 🎬 Loading new scene: ${sceneName}`);
         // Add new scene
         this.current = scene;
         this.root.addChild(scene.container);

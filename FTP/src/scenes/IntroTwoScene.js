@@ -160,10 +160,11 @@ export class IntroTwoScene {
                 // Disable button immediately
                 sprite.eventMode = 'none';
                 sprite.cursor = 'default';
-                console.log('[IntroTwoScene] Roll button clicked! Transitioning to PAGE 3...');
+                console.log('[IntroTwoScene] Roll button clicked! Transitioning to DiceRollScene (PAGE 3)...');
                 const sceneManager = window.sceneManager;
                 if (sceneManager) {
                     const { DiceRollScene } = await import('./DiceRollScene');
+                    console.log('[SCENE TRANSITION] IntroTwoScene → DiceRollScene');
                     await sceneManager.change(new DiceRollScene(), 'none');
                 }
             });
