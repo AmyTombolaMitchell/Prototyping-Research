@@ -82,7 +82,7 @@ export class WheelSpinScene {
     }
     async init() {
         console.log('[WheelSpinScene] Starting init');
-        // Add page4 background
+        // Add PAGE 4 background
         const bgTexture = Assets.get('PAGE4_BG');
         if (bgTexture) {
             const bg = new Sprite(bgTexture);
@@ -92,7 +92,7 @@ export class WheelSpinScene {
             this.container.addChild(bg);
             this.layeredSprites.push(bg);
         }
-        // Add TOP_BANNER from page3 at the top - start with no_5 banner
+        // Add TOP_BANNER from PAGE 3 at the top - start with no_5 banner
         const topBannerTexture = Assets.get('BANNER_NO_5');
         console.log('[WheelSpinScene] BANNER_NO_5 texture:', topBannerTexture);
         if (topBannerTexture) {
@@ -331,12 +331,12 @@ export class WheelSpinScene {
         this.elementsToDestroy.push(winText);
         // Pop in animation for text
         await this.popIn(winText);
-        // Wait a few seconds then auto-transition to page5
+        // Wait a few seconds then auto-transition to PAGE 5
         await this.wait(3000);
         if (this.isTransitioning)
             return; // Prevent double-transition
         this.isTransitioning = true;
-        console.log('[WheelSpinScene] Auto-transitioning to page5...');
+        console.log('[WheelSpinScene] Auto-transitioning to PAGE 5...');
         const sceneManager = window.sceneManager;
         if (sceneManager) {
             const { MessageScene } = await import('./MessageScene');

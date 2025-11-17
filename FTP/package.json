@@ -10,7 +10,7 @@
     "lint": "echo 'Add linter config (ESLint) later'"
   },
   "dependencies": {
-    "pixi.js": "^8.1.0"
+    "pixi.js": "^8.14.1"
   },
   "devDependencies": {
     "typescript": "^5.9.3",

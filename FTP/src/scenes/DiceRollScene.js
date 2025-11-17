@@ -90,7 +90,7 @@ export class DiceRollScene {
     }
     async init() {
         console.log('[DiceRollScene] Starting init');
-        // Add page3 background
+        // Add PAGE 3 background
         const bgTexture = Assets.get('PAGE3_BG');
         if (bgTexture) {
             const bg = new Sprite(bgTexture);
@@ -130,12 +130,12 @@ export class DiceRollScene {
         await this.animateDiceRoll();
         // After dice roll, move avatar along the path
         await this.moveAvatarAlongPath();
-        // Wait 3 seconds then auto-transition to page4
+        // Wait 3 seconds then auto-transition to PAGE 4
         await this.wait(3000);
         if (this.isTransitioning)
             return; // Prevent double-transition
         this.isTransitioning = true;
-        console.log('[DiceRollScene] Auto-transitioning to page4...');
+        console.log('[DiceRollScene] Auto-transitioning to PAGE 4...');
         const sceneManager = window.sceneManager;
         if (sceneManager) {
             const { WheelSpinScene } = await import('./WheelSpinScene');
