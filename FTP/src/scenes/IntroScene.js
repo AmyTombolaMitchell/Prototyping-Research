@@ -54,41 +54,41 @@ export class IntroScene {
                 this.container.addChild(bg);
                 this.layeredSprites.push(bg);
             }
-            // Helper to animate pop/bounce for elements
+            // Helper to animate pop/bounce for elements (slower)
             const popIn = (sprite) => {
-                sprite.alpha = 0;
-                const originalScale = sprite.scale.x;
-                sprite.scale.set(0);
-                let frame = 0;
-                const animate = () => {
-                    frame++;
-                    sprite.alpha = Math.min(1, sprite.alpha + 0.05);
-                    // Bounce effect - overshoot then settle
-                    const progress = frame / 50; // Increased from 30 to 50 for slower animation
-                    let scale;
-                    if (progress < 0.5) {
-                        // Quick expansion with overshoot
-                        scale = originalScale * (progress * 2.4);
-                    }
-                    else if (progress < 0.75) {
-                        // Bounce back (overshoot)
-                        scale = originalScale * (1.2 - (progress - 0.5) * 0.8);
-                    }
-                    else {
-                        // Settle to final size
-                        scale = originalScale * (1.0 + (1.0 - progress) * 0.2);
-                    }
-                    sprite.scale.set(scale);
-                    if (frame < 50) { // Increased from 30 to 50
-                        requestAnimationFrame(animate);
-                    }
-                    else {
-                        sprite.scale.set(originalScale);
-                    }
-                };
-                requestAnimationFrame(animate);
+                return new Promise((resolve) => {
+                    sprite.alpha = 0;
+                    const originalScale = sprite.scale.x;
+                    sprite.scale.set(0);
+                    let frame = 0;
+                    const totalFrames = 90; // Slower animation (was 50)
+                    const animate = () => {
+                        frame++;
+                        sprite.alpha = Math.min(1, sprite.alpha + 0.02); // Slower fade-in
+                        // Bounce effect - overshoot then settle
+                        const progress = frame / totalFrames;
+                        let scale;
+                        if (progress < 0.5) {
+                            scale = originalScale * (progress * 2.4);
+                        }
+                        else if (progress < 0.75) {
+                            scale = originalScale * (1.2 - (progress - 0.5) * 0.8);
+                        }
+                        else {
+                            scale = originalScale * (1.0 + (1.0 - progress) * 0.2);
+                        }
+                        sprite.scale.set(scale);
+                        if (frame < totalFrames) {
+                            requestAnimationFrame(animate);
+                        }
+                        else {
+                            sprite.scale.set(originalScale);
+                            resolve();
+                        }
+                    };
+                    requestAnimationFrame(animate);
+                });
             };
-            // Helper for jiggle animation (periodic for clickable button)
             const jiggle = (sprite) => {
                 let jiggleFrame = 0;
                 let isJiggling = false;
@@ -130,15 +130,23 @@ export class IntroScene {
                 this.container.addChild(lady);
                 this.layeredSprites.push(lady);
                 // Slow fade-in animation
-                let frame = 0;
                 const fadeIn = () => {
-                    frame++;
-                    lady.alpha = Math.min(1, lady.alpha + 0.02);
-                    if (lady.alpha < 1) {
-                        requestAnimationFrame(fadeIn);
-                    }
+                    return new Promise((resolve) => {
+                        let frame = 0;
+                        const animate = () => {
+                            frame++;
+                            lady.alpha = Math.min(1, lady.alpha + 0.02);
+                            if (lady.alpha < 1) {
+                                requestAnimationFrame(animate);
+                            }
+                            else {
+                                resolve();
+                            }
+                        };
+                        requestAnimationFrame(animate);
+                    });
                 };
-                requestAnimationFrame(fadeIn);
+                await fadeIn();
                 await new Promise(res => setTimeout(res, 400));
             }
             // Asset 1 - Top center (smaller, lower)
@@ -151,8 +159,7 @@ export class IntroScene {
                 sprite.y = 200;
                 this.container.addChild(sprite);
                 this.layeredSprites.push(sprite);
-                popIn(sprite);
-                await new Promise(res => setTimeout(res, 500));
+                await popIn(sprite);
             }
             // Asset 2 - Below asset 1, to the left (slightly bigger)
             const asset2Texture = Assets.get('INTRO_2');
@@ -165,8 +172,7 @@ export class IntroScene {
                 sprite.y = 380;
                 this.container.addChild(sprite);
                 this.layeredSprites.push(sprite);
-                popIn(sprite);
-                await new Promise(res => setTimeout(res, 500));
+                await popIn(sprite);
             }
             // Asset 3 - To the right of asset 2 (slightly bigger, same size as asset 5)
             const asset3Texture = Assets.get('INTRO_3');
@@ -178,53 +184,75 @@ export class IntroScene {
                 sprite.y = 450;
                 this.container.addChild(sprite);
                 this.layeredSprites.push(sprite);
-                popIn(sprite);
-                await new Promise(res => setTimeout(res, 500));
+                await popIn(sprite);
             }
             // Asset 4 - Under asset 1, a bit left (slightly bigger)
+            let asset4Sprite = null;
             const asset4Texture = Assets.get('INTRO_4');
             if (asset4Texture) {
-                const sprite = new Sprite(asset4Texture);
-                sprite.anchor.set(0.5);
-                sprite.scale.set(0.75);
-                sprite.x = (this.canvasWidth / 2) - 80;
-                sprite.y = 620;
-                this.container.addChild(sprite);
-                this.layeredSprites.push(sprite);
-                popIn(sprite);
-                await new Promise(res => setTimeout(res, 500));
+                asset4Sprite = new Sprite(asset4Texture);
+                asset4Sprite.anchor.set(0.5);
+                asset4Sprite.scale.set(0.75);
+                asset4Sprite.x = (this.canvasWidth / 2) - 80;
+                asset4Sprite.y = 620;
+                this.container.addChild(asset4Sprite);
+                this.layeredSprites.push(asset4Sprite);
+                await popIn(asset4Sprite);
             }
             // Asset 5 - Below asset 3, to the right more (same size as asset 3)
-            const asset5Texture = Assets.get('INTRO_5');
-            if (asset5Texture) {
-                const sprite = new Sprite(asset5Texture);
-                sprite.anchor.set(0.5);
-                sprite.scale.set(0.75);
-                sprite.x = this.canvasWidth - 120;
-                sprite.y = 700;
-                this.container.addChild(sprite);
-                this.layeredSprites.push(sprite);
-                popIn(sprite);
-                await new Promise(res => setTimeout(res, 500));
+            let asset5Sprite = null;
+            let asset5Tex = Assets.get('INTRO_5');
+            if (asset5Tex) {
+                asset5Sprite = new Sprite(asset5Tex);
+                asset5Sprite.anchor.set(0.5);
+                asset5Sprite.scale.set(0.75);
+                asset5Sprite.x = this.canvasWidth - 120;
+                asset5Sprite.y = 700;
+                this.container.addChild(asset5Sprite);
+                this.layeredSprites.push(asset5Sprite);
+                await popIn(asset5Sprite);
             }
+            // ...existing code...
             // Asset 6 - To the right of asset 7 (added after lady to appear in front, with jiggle)
+            let asset6Sprite = null;
             const asset6Texture = Assets.get('INTRO_6');
             if (asset6Texture) {
-                const sprite = new Sprite(asset6Texture);
-                sprite.anchor.set(0.5);
-                sprite.scale.set(0.7);
-                sprite.x = 350;
-                sprite.y = this.canvasHeight - 150;
-                // Make it interactive/clickable
-                sprite.eventMode = 'static';
-                sprite.cursor = 'pointer';
-                sprite.on('pointerdown', async () => {
-                    if (this.isTransitioning)
+                asset6Sprite = new Sprite(asset6Texture);
+                asset6Sprite.anchor.set(0.5);
+                asset6Sprite.scale.set(0.7);
+                asset6Sprite.x = 350;
+                asset6Sprite.y = this.canvasHeight - 150;
+                // Initially not interactive
+                asset6Sprite.eventMode = 'none';
+                asset6Sprite.cursor = 'default';
+                // Debug: log when pointer enters/leaves
+                asset6Sprite.on('pointerover', () => {
+                    console.log('[IntroScene] Pointer over Asset 6');
+                });
+                asset6Sprite.on('pointerout', () => {
+                    console.log('[IntroScene] Pointer out of Asset 6');
+                });
+                this.container.addChild(asset6Sprite);
+                this.layeredSprites.push(asset6Sprite);
+                console.log('[IntroScene] Asset 6 added - interactive:', asset6Sprite.eventMode, 'cursor:', asset6Sprite.cursor);
+                await popIn(asset6Sprite);
+                jiggle(asset6Sprite); // Start continuous jiggle animation
+            }
+            // Only enable banner click after ALL assets have loaded and animated
+            const page5Asset4 = Assets.get('PAGE5_4');
+            const page5Asset5 = Assets.get('PAGE5_5');
+            const self = this;
+            if (page5Asset4 && page5Asset5 && asset6Sprite && asset4Sprite && asset5Sprite) {
+                // Wait a bit longer to ensure all pop-ins are visually complete
+                await new Promise(res => setTimeout(res, 600));
+                asset6Sprite.eventMode = 'static';
+                asset6Sprite.cursor = 'pointer';
+                asset6Sprite.on('pointerdown', async () => {
+                    if (self.isTransitioning)
                         return; // Prevent double-click
-                    this.isTransitioning = true;
-                    // Disable button immediately
-                    sprite.eventMode = 'none';
-                    sprite.cursor = 'default';
+                    self.isTransitioning = true;
+                    asset6Sprite.eventMode = 'none';
+                    asset6Sprite.cursor = 'default';
                     console.log('[IntroScene] Asset 6 clicked! Transitioning to PAGE 2...');
                     const sceneManager = window.sceneManager;
                     if (sceneManager) {
@@ -232,19 +260,6 @@ export class IntroScene {
                         await sceneManager.change(new IntroTwoScene(), 'none');
                     }
                 });
-                // Debug: log when pointer enters/leaves
-                sprite.on('pointerover', () => {
-                    console.log('[IntroScene] Pointer over Asset 6');
-                });
-                sprite.on('pointerout', () => {
-                    console.log('[IntroScene] Pointer out of Asset 6');
-                });
-                this.container.addChild(sprite);
-                this.layeredSprites.push(sprite);
-                console.log('[IntroScene] Asset 6 added - interactive:', sprite.eventMode, 'cursor:', sprite.cursor);
-                popIn(sprite);
-                jiggle(sprite); // Start continuous jiggle animation
-                await new Promise(res => setTimeout(res, 400));
             }
             console.log('[IntroScene] All sprites added, total:', this.layeredSprites.length);
             // Wait before marking ready

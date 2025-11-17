@@ -90,7 +90,7 @@ export class DayTwoScene {
             configurable: true,
             writable: true,
             value: [
-                { x: 315, y: 664 }, // Starting position (position 5 from previous scene)
+                { x: 240, y: 600 }, // Starting position (higher and more left)
                 { x: 94, y: 2408 }, // Position 1
                 { x: 278, y: 2310 }, // Position 2
                 { x: 489, y: 2248 }, // Position 3
@@ -116,9 +116,28 @@ export class DayTwoScene {
             writable: true,
             value: false
         });
+        Object.defineProperty(this, "coordText", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: null
+        });
         this.currentPosition = lastPosition;
     }
     async init() {
+        // Add coordinate debug overlay (top left)
+        this.coordText = new Text('', {
+            fontFamily: 'Arial',
+            fontSize: 18,
+            fontWeight: 'bold',
+            fill: 0xFFDD00,
+            align: 'left',
+            stroke: 0x000000
+        });
+        this.coordText.x = 10;
+        this.coordText.y = 10;
+        this.coordText.anchor.set(0, 0);
+        this.container.addChild(this.coordText);
         console.log('[DayTwoScene] Init: canvas', this.canvasWidth, this.canvasHeight);
         console.log('[DayTwoScene] Starting init');
         this.container.removeChildren();
@@ -144,11 +163,16 @@ export class DayTwoScene {
             const bgHeight = this.longBackground.height * scale;
             this.minY = Math.min(0, this.canvasHeight - bgHeight);
             this.maxY = 0;
-            // Start at the bottom of the map
-            this.scrollContainer.y = this.minY;
+            // Center scroll on avatar starting position
+            const avatarStartY = 664;
+            const targetScreenY = this.canvasHeight / 2;
+            let scrollOffset = avatarStartY - targetScreenY;
+            let newScrollY = -scrollOffset;
+            newScrollY = Math.max(this.minY, Math.min(this.maxY, newScrollY));
+            this.scrollContainer.y = newScrollY;
             console.log('[DayTwoScene] Background height:', bgHeight, 'Canvas height:', this.canvasHeight);
             console.log('[DayTwoScene] Scroll limits - min:', this.minY, 'max:', this.maxY);
-            console.log('[DayTwoScene] Starting position (bottom):', this.scrollContainer.y);
+            console.log('[DayTwoScene] Starting position (centered on avatar):', this.scrollContainer.y);
         }
         // Add TOP BANNER (same as previous page - BANNER_NO_25)
         const topBannerTexture = Assets.get('BANNER_NO_25');
@@ -173,15 +197,15 @@ export class DayTwoScene {
             this.container.addChild(bottomBanner);
             this.layeredSprites.push(bottomBanner);
         }
-        // Add AVATAR at last position from previous round (inside scrollContainer so it scrolls with background)
+        // Add AVATAR at fixed starting position (inside scrollContainer so it scrolls with background)
         const avatarTexture = Assets.get('PAGE3_AVATAR');
         if (avatarTexture && this.scrollContainer) {
             this.avatar = new Sprite(avatarTexture);
             this.avatar.anchor.set(0.5, 1);
             this.avatar.scale.set(0.75);
-            const pos = this.pathPositions[this.currentPosition];
-            this.avatar.x = pos.x;
-            this.avatar.y = pos.y;
+            // Always start at { x: 240, y: 600 }
+            this.avatar.x = 240;
+            this.avatar.y = 600;
             this.scrollContainer.addChild(this.avatar);
             this.layeredSprites.push(this.avatar);
             console.log('[DayTwoScene] Avatar created and positioned:', {
@@ -193,9 +217,7 @@ export class DayTwoScene {
         }
         // Add drag interaction
         this.setupDragInteraction();
-        // Wait a few seconds, then show the dice button
-        await this.wait(3000);
-        // Show roll dice button
+        // Show roll dice button immediately
         await this.showDiceButton();
         this.ready = true;
         console.log('[DayTwoScene] Marked as ready');
@@ -214,15 +236,15 @@ export class DayTwoScene {
         this.diceButton.eventMode = 'static';
         this.diceButton.cursor = 'pointer';
         this.container.addChild(this.diceButton);
-        // Place dice to the right of roll button, smaller
+        // Place dice further to the right of roll button, smaller
         const diceTexture = Assets.get('PAGE3_DICE');
         let diceSprite = null;
         if (diceTexture) {
             diceSprite = new Sprite(diceTexture);
             diceSprite.anchor.set(0.5);
-            diceSprite.x = this.diceButton.x + 80; // To the right
+            diceSprite.x = this.diceButton.x + 110; // Further right
             diceSprite.y = this.diceButton.y;
-            diceSprite.scale.set(0.6); // Smaller dice
+            diceSprite.scale.set(0.45); // Smaller dice
             this.container.addChild(diceSprite);
         }
         this.diceButton.on('pointerdown', async () => {
@@ -247,11 +269,19 @@ export class DayTwoScene {
         const diceTexture = Assets.get('PAGE3_DICE');
         if (!diceTexture)
             return;
+        // Animate dice roll to the right of the button, smaller
         const dice = new Sprite(diceTexture);
         dice.anchor.set(0.5);
-        dice.x = this.canvasWidth / 2;
-        dice.y = this.canvasHeight / 2;
-        dice.scale.set(1.5);
+        // Use same position as static dice
+        if (this.diceButton) {
+            dice.x = this.diceButton.x + 110;
+            dice.y = this.diceButton.y;
+        }
+        else {
+            dice.x = this.canvasWidth / 2 + 110;
+            dice.y = this.canvasHeight - 200;
+        }
+        dice.scale.set(0.5);
         this.container.addChild(dice);
         const spinDuration = 1500;
         const startTime = Date.now();
@@ -298,10 +328,81 @@ export class DayTwoScene {
             console.log(`[DayTwoScene] Avatar now at: x=${this.avatar?.x}, y=${this.avatar?.y}`);
             await this.wait(200);
         }
-        // After avatar reaches end of path, transition to Token Shop scene
-        console.log('[DayTwoScene] Avatar reached end of path - transitioning to Token Shop');
-        await this.wait(1000);
-        await this.transitionToTokenShop();
+        // After avatar reaches end of path, show char asset and chat sequence, then token shop icon
+        if (this.avatar && this.scrollContainer) {
+            // Show char asset at avatar position
+            const charTexture = Assets.get('PAGE3_CHAR');
+            if (charTexture) {
+                const charSprite = new Sprite(charTexture);
+                charSprite.anchor.set(0.5, 1);
+                charSprite.scale.set(0.75);
+                charSprite.x = this.avatar.x;
+                charSprite.y = this.avatar.y;
+                this.scrollContainer.addChild(charSprite);
+                // Animate chat sequence
+                const chatKeys = ['PAGE6_CHAT_1', 'PAGE6_CHAT_2', 'PAGE6_CHAT_3'];
+                const chatSprites = [];
+                for (let i = 0; i < chatKeys.length; i++) {
+                    const chatTexture = Assets.get(chatKeys[i]);
+                    if (chatTexture) {
+                        const chatSprite = new Sprite(chatTexture);
+                        chatSprite.anchor.set(0, 1);
+                        chatSprite.x = charSprite.x + 60;
+                        chatSprite.y = charSprite.y - 40 - i * 40;
+                        chatSprite.alpha = 0;
+                        this.scrollContainer.addChild(chatSprite);
+                        chatSprites.push(chatSprite);
+                    }
+                }
+                // Animate chat bubbles appearing and moving up
+                for (let i = 0; i < chatSprites.length; i++) {
+                    await this.fadeIn(chatSprites[i], 400);
+                    // Move previous chats up and fade
+                    for (let j = 0; j < i; j++) {
+                        chatSprites[j].y -= 40;
+                        chatSprites[j].alpha = 0.5;
+                    }
+                    await this.wait(400);
+                }
+            }
+            // After chat, show token shop icon with pulse at top right
+            const tokenShopTexture = Assets.get('PAGE3_TOKEN_SHOP_ICON');
+            if (tokenShopTexture) {
+                const icon = new Sprite(tokenShopTexture);
+                icon.anchor.set(1, 0);
+                icon.x = this.canvasWidth - 20;
+                icon.y = 20;
+                icon.scale.set(0.7);
+                this.container.addChild(icon);
+                // Pulse animation (white circle behind icon)
+                const pulse = new Graphics();
+                pulse.circle(0, 0, 38);
+                pulse.fill(0xFFFFFF, 0.3);
+                pulse.x = icon.x;
+                pulse.y = icon.y + 20;
+                this.container.addChild(pulse);
+                let pulseScale = 1;
+                let pulseGrowing = true;
+                function animatePulse() {
+                    if (pulseGrowing) {
+                        pulseScale += 0.02;
+                        if (pulseScale > 1.3)
+                            pulseGrowing = false;
+                    }
+                    else {
+                        pulseScale -= 0.02;
+                        if (pulseScale < 1)
+                            pulseGrowing = true;
+                    }
+                    pulse.scale.set(pulseScale);
+                    requestAnimationFrame(animatePulse);
+                }
+                animatePulse();
+            }
+            // Wait before transitioning to token shop
+            await this.wait(1200);
+            await this.transitionToTokenShop();
+        }
     }
     async transitionToTokenShop() {
         const sceneManager = window.sceneManager;
@@ -318,7 +419,7 @@ export class DayTwoScene {
         const target = this.pathPositions[positionIndex];
         const startX = this.avatar.x;
         const startY = this.avatar.y;
-        const duration = 400;
+        const duration = 500;
         const startTime = Date.now();
         return new Promise((resolve) => {
             const animate = () => {
@@ -326,17 +427,17 @@ export class DayTwoScene {
                     return;
                 const elapsed = Date.now() - startTime;
                 const progress = Math.min(1, elapsed / duration);
+                // Smooth ease for both axes
                 const easeProgress = 1 - Math.pow(1 - progress, 3);
                 this.avatar.x = startX + (target.x - startX) * easeProgress;
                 this.avatar.y = startY + (target.y - startY) * easeProgress;
-                const jumpHeight = 60;
-                const arc = Math.sin(progress * Math.PI) * jumpHeight;
-                this.avatar.y -= arc;
+                // Center scroll on avatar, always smoothly follow
                 if (this.scrollContainer) {
                     const avatarScreenY = this.avatar.y + this.scrollContainer.y;
                     const targetScreenY = this.canvasHeight / 2;
                     const scrollOffset = avatarScreenY - targetScreenY;
-                    let newScrollY = this.scrollContainer.y - scrollOffset * 0.1;
+                    // Use a higher smoothing factor for less jumpiness
+                    let newScrollY = this.scrollContainer.y - scrollOffset * 0.2;
                     newScrollY = Math.max(this.minY, Math.min(this.maxY, newScrollY));
                     this.scrollContainer.y = newScrollY;
                 }
@@ -471,7 +572,13 @@ export class DayTwoScene {
         return new Promise(resolve => setTimeout(resolve, ms));
     }
     update(delta) {
-        // No update logic needed for this scene
+        // Update coordinate overlay if avatar exists
+        if (this.avatar && this.coordText) {
+            // Avatar position relative to scrollContainer
+            const screenX = this.avatar.x;
+            const screenY = this.avatar.y + (this.scrollContainer ? this.scrollContainer.y : 0);
+            this.coordText.text = `Avatar: x=${Math.round(screenX)}, y=${Math.round(screenY)}`;
+        }
     }
     destroy() {
         this.container.removeChildren();
