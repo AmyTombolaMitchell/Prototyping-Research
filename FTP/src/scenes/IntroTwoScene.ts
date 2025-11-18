@@ -81,10 +81,10 @@ export class IntroTwoScene implements IScene {
         banner.cursor = 'default';
         console.log('[IntroTwoScene] Top banner clicked! Transitioning to DAY TWO...');
         const sceneManager = (window as any).sceneManager;
-        if (sceneManager) {
-          const { DayTwoScene } = await import('./DayTwoScene');
-          await sceneManager.change(new DayTwoScene(), 'none');
-        }
+        //if (sceneManager) {
+        //  const { DayTwoScene } = await import('./DayTwoScene');
+        //  await sceneManager.change(new DayTwoScene(), 'none');
+        //}
       });
       this.container.addChild(banner);
       this.layeredSprites.push(banner);
@@ -113,10 +113,10 @@ export class IntroTwoScene implements IScene {
         bottomBanner.cursor = 'default';
         console.log('[IntroTwoScene] Bottom banner clicked! Transitioning to DAY TWO...');
         const sceneManager = (window as any).sceneManager;
-        if (sceneManager) {
-          const { DayTwoScene } = await import('./DayTwoScene');
-          await sceneManager.change(new DayTwoScene(), 'none');
-        }
+        //if (sceneManager) {
+        //  const { DayTwoScene } = await import('./DayTwoScene');
+        //  await sceneManager.change(new DayTwoScene(), 'none');
+        //}
       });
       this.container.addChild(bottomBanner);
       this.layeredSprites.push(bottomBanner);

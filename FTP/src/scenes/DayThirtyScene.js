@@ -48,13 +48,14 @@ export class DayThirtyScene {
       console.error('[DayThirtyScene] PAGE11_LK_BACKGROUND not found');
     }
 
-    const topBannerTexture = Assets.get('BANNER_NO_STREAK') || Assets.get('BANNER_NO_0');
+    // Start with BANNER_NO_0 and make it bigger
+    const topBannerTexture = Assets.get('BANNER_NO_0');
     if (topBannerTexture) {
       this.topBanner = new Sprite(topBannerTexture);
       this.topBanner.anchor.set(0.5, 0);
       this.topBanner.x = this.canvasWidth / 2;
       this.topBanner.y = 0;
-      this.topBanner.scale.set(0.75); // Fixed scale to match other scenes
+      this.topBanner.scale.set(1.2); // Make top banner bigger
       this.container.addChild(this.topBanner);
       this.layeredSprites.push(this.topBanner);
     }
@@ -125,10 +126,10 @@ export class DayThirtyScene {
     bubble.scale.set(0);
     this.container.addChild(bubble);
 
-    // Chat bubbles now bigger
-    const targetScale = assetKey.includes('lk_chat') ? 0.6 : 1.2;
-    await this.popIn(bubble, targetScale);
-    return bubble;
+  // Chat bubbles now bigger
+  const targetScale = 1.2; // Make all chat bubbles bigger
+  await this.popIn(bubble, targetScale);
+  return bubble;
   }
 
   async bumpChatBubble(bubble) {
@@ -344,6 +345,7 @@ export class DayThirtyScene {
 
   async showAvatar() {
     if (this.avatar) {
+      this.avatar.visible = true; // Ensure avatar is visible on load
       return;
     }
 
@@ -360,6 +362,7 @@ export class DayThirtyScene {
     this.avatar.x = startPos.x;
     this.avatar.y = startPos.y;
     this.currentPathIndex = 0;
+    this.avatar.visible = true; // Ensure avatar is visible on load
     this.container.addChild(this.avatar);
 
     console.log('[DayThirtyScene] Avatar placed at start of Day 30 path');
@@ -370,13 +373,22 @@ export class DayThirtyScene {
       return;
     }
 
+    // Banner keys for each move (change after landing)
+    const bannerKeys = ['BANNER_NO_1', 'BANNER_NO_2', 'BANNER_NO_3', 'BANNER_NO_4', 'BANNER_NO_5'];
     for (let i = 1; i < this.pathPositions.length; i++) {
       const target = this.pathPositions[i];
       await this.animateAvatarTo(target.x, target.y);
       this.currentPathIndex = i;
+      // Change banner after landing
+      if (this.topBanner && bannerKeys[i-1]) {
+        const newBannerTexture = Assets.get(bannerKeys[i-1]);
+        if (newBannerTexture) {
+          this.topBanner.texture = newBannerTexture;
+          this.topBanner.scale.set(1.2); // Keep banner bigger as it changes
+        }
+      }
       await this.wait(300);
     }
-    
     // After avatar finishes moving, show character and PAGE 5 assets
     await this.showEndSequence();
   }
@@ -459,7 +471,7 @@ export class DayThirtyScene {
     if (asset5Texture) {
       const asset5 = new Sprite(asset5Texture);
       asset5.anchor.set(1, 1);
-      asset5.x = this.canvasWidth - 20;
+      asset5.x = this.canvasWidth + 20; // Move token_shop further right
       asset5.y = this.canvasHeight - 180;
       asset5.alpha = 0;
       asset5.scale.set(0);

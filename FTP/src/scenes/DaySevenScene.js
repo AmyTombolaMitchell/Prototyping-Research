@@ -520,15 +520,39 @@ export class DaySevenScene {
   }
 
   async transitionToDayThirty() {
-    console.log('[DaySevenScene] Transitioning to Day 30...');
+    // Show black screen with thank you message before transitioning
+    // Show black screen
+    const graphics = new Graphics();
+    graphics.rect(0, 0, this.canvasWidth, this.canvasHeight);
+    graphics.fill(0x000000);
+    this.container.addChild(graphics);
+
+    // Show thank you text on top using PIXI.Text
+    const thankYouText = new PIXI.Text('Thank you for taking part in the research!\nPlease return to the User Testing page', {
+      fontFamily: 'Arial',
+      fontSize: 38,
+      fontWeight: 'bold',
+      fill: 0xFFFFFF,
+      align: 'center',
+      wordWrap: true,
+      wordWrapWidth: this.canvasWidth - 60
+    });
+    thankYouText.anchor.set(0.5);
+    thankYouText.x = this.canvasWidth / 2;
+    thankYouText.y = this.canvasHeight / 2;
+    thankYouText.alpha = 1;
+    this.container.addChild(thankYouText);
+
+    await this.wait(3000);
+
+    // Transition to ThankYouScene
     const sceneManager = window.sceneManager;
     if (!sceneManager) {
-      console.warn('[DaySevenScene] No scene manager available for Day 30 transition');
+      console.warn('[DaySevenScene] No scene manager available for Day 7 end transition');
       return;
     }
-
-    const { DayThirtyTransition } = await import('./DayThirtyTransition.js');
-    await sceneManager.change(new DayThirtyTransition(), 'none');
+    const { ThankYouScene } = await import('./ThankYouScene.js');
+    await sceneManager.change(new ThankYouScene(), 'none');
   }
 
   async moveAvatar(spaces) {

@@ -1,4 +1,5 @@
 import { Container, Sprite, Assets, Graphics, Text } from 'pixi.js';
+import { DiceRollScene } from './DiceRollScene';
 export class DayTwoScene {
     constructor(lastPosition = 0) {
         Object.defineProperty(this, "container", {
@@ -24,6 +25,12 @@ export class DayTwoScene {
             configurable: true,
             writable: true,
             value: []
+        });
+        Object.defineProperty(this, "topBanner", {
+            enumerable: true,
+            configurable: true,
+            writable: true,
+            value: null
         });
         Object.defineProperty(this, "canvasWidth", {
             enumerable: true,
@@ -90,7 +97,7 @@ export class DayTwoScene {
             configurable: true,
             writable: true,
             value: [
-                { x: 240, y: 600 }, // Starting position (higher and more left)
+                { x: 315, y: 664 }, // Starting position (position 5 from previous scene)
                 { x: 94, y: 2408 }, // Position 1
                 { x: 278, y: 2310 }, // Position 2
                 { x: 489, y: 2248 }, // Position 3
@@ -125,19 +132,6 @@ export class DayTwoScene {
         this.currentPosition = lastPosition;
     }
     async init() {
-        // Add coordinate debug overlay (top left)
-        this.coordText = new Text('', {
-            fontFamily: 'Arial',
-            fontSize: 18,
-            fontWeight: 'bold',
-            fill: 0xFFDD00,
-            align: 'left',
-            stroke: 0x000000
-        });
-        this.coordText.x = 10;
-        this.coordText.y = 10;
-        this.coordText.anchor.set(0, 0);
-        this.container.addChild(this.coordText);
         console.log('[DayTwoScene] Init: canvas', this.canvasWidth, this.canvasHeight);
         console.log('[DayTwoScene] Starting init');
         this.container.removeChildren();
@@ -163,62 +157,62 @@ export class DayTwoScene {
             const bgHeight = this.longBackground.height * scale;
             this.minY = Math.min(0, this.canvasHeight - bgHeight);
             this.maxY = 0;
-            // Center scroll on avatar starting position
-            const avatarStartY = 664;
-            const targetScreenY = this.canvasHeight / 2;
-            let scrollOffset = avatarStartY - targetScreenY;
-            let newScrollY = -scrollOffset;
-            newScrollY = Math.max(this.minY, Math.min(this.maxY, newScrollY));
-            this.scrollContainer.y = newScrollY;
+            // Start at the bottom of the map
+            this.scrollContainer.y = this.minY;
             console.log('[DayTwoScene] Background height:', bgHeight, 'Canvas height:', this.canvasHeight);
             console.log('[DayTwoScene] Scroll limits - min:', this.minY, 'max:', this.maxY);
             console.log('[DayTwoScene] Starting position (centered on avatar):', this.scrollContainer.y);
+            console.log('[DayTwoScene] Starting position (bottom):', this.scrollContainer.y);
+            // (removed misplaced closing brace)
+            // Add TOP BANNER (same as previous page - BANNER_NO_25)
+            // Add TOP BANNER (will be updated as avatar moves)
+            const topBannerTexture = Assets.get('BANNER_NO_25');
+            if (topBannerTexture) {
+                this.topBanner = new Sprite(topBannerTexture);
+                this.topBanner.anchor.set(0.5, 0);
+                this.topBanner.x = this.canvasWidth / 2;
+                this.topBanner.y = 0;
+                this.topBanner.scale.set(0.75);
+                this.container.addChild(this.topBanner);
+                this.layeredSprites.push(this.topBanner);
+            }
+            // Add BOTTOM_BANNER at the bottom
+            const bottomBannerTexture = Assets.get('PAGE6_BOTTOM_BANNER');
+            if (bottomBannerTexture) {
+                const bottomBanner = new Sprite(bottomBannerTexture);
+                bottomBanner.anchor.set(0.5, 1);
+                bottomBanner.x = this.canvasWidth / 2;
+                bottomBanner.y = this.canvasHeight;
+                bottomBanner.scale.set(1.0);
+                this.container.addChild(bottomBanner);
+                this.layeredSprites.push(bottomBanner);
+            }
+            // Add AVATAR at the bottom of the long background (inside scrollContainer)
+            const avatarTexture = Assets.get('PAGE3_AVATAR');
+            if (avatarTexture && this.scrollContainer && this.longBackground) {
+                this.avatar = new Sprite(avatarTexture);
+                this.avatar.anchor.set(0.5, 1);
+                this.avatar.scale.set(0.75);
+                // Place avatar higher above the bottom center of the long background
+                const bgHeight = this.longBackground.height * this.longBackground.scale.y;
+                this.avatar.x = this.canvasWidth / 2 + 30; // Move avatar right by 30 pixels
+                this.avatar.y = bgHeight - 650 + 50; // Move avatar down by 50 pixels
+                this.scrollContainer.addChild(this.avatar);
+                this.layeredSprites.push(this.avatar);
+                console.log('[DayTwoScene] Avatar created and positioned at bottom:', {
+                    x: this.avatar.x,
+                    y: this.avatar.y
+                });
+            }
+            // Add drag interaction
+            this.setupDragInteraction();
+            // Show roll dice button immediately
+            await this.showDiceButton();
+            // Ensure scroll is locked so the bottom of the long background is visible
+            if (this.scrollContainer && this.longBackground) {
+                this.scrollContainer.y = this.minY;
+            }
         }
-        // Add TOP BANNER (same as previous page - BANNER_NO_25)
-        const topBannerTexture = Assets.get('BANNER_NO_25');
-        if (topBannerTexture) {
-            const topBanner = new Sprite(topBannerTexture);
-            topBanner.anchor.set(0.5, 0);
-            topBanner.x = this.canvasWidth / 2;
-            topBanner.y = 0;
-            topBanner.scale.set(0.75);
-            console.log('[DayTwoScene] Banner created:', topBanner.texture, 'scale:', topBanner.scale.x);
-            this.container.addChild(topBanner);
-            this.layeredSprites.push(topBanner);
-        }
-        // Add BOTTOM_BANNER at the bottom
-        const bottomBannerTexture = Assets.get('PAGE6_BOTTOM_BANNER');
-        if (bottomBannerTexture) {
-            const bottomBanner = new Sprite(bottomBannerTexture);
-            bottomBanner.anchor.set(0.5, 1);
-            bottomBanner.x = this.canvasWidth / 2;
-            bottomBanner.y = this.canvasHeight;
-            bottomBanner.scale.set(1.0);
-            this.container.addChild(bottomBanner);
-            this.layeredSprites.push(bottomBanner);
-        }
-        // Add AVATAR at fixed starting position (inside scrollContainer so it scrolls with background)
-        const avatarTexture = Assets.get('PAGE3_AVATAR');
-        if (avatarTexture && this.scrollContainer) {
-            this.avatar = new Sprite(avatarTexture);
-            this.avatar.anchor.set(0.5, 1);
-            this.avatar.scale.set(0.75);
-            // Always start at { x: 240, y: 600 }
-            this.avatar.x = 240;
-            this.avatar.y = 600;
-            this.scrollContainer.addChild(this.avatar);
-            this.layeredSprites.push(this.avatar);
-            console.log('[DayTwoScene] Avatar created and positioned:', {
-                currentPosition: this.currentPosition,
-                x: this.avatar.x,
-                y: this.avatar.y,
-                pathPositions: this.pathPositions
-            });
-        }
-        // Add drag interaction
-        this.setupDragInteraction();
-        // Show roll dice button immediately
-        await this.showDiceButton();
         this.ready = true;
         console.log('[DayTwoScene] Marked as ready');
     }
@@ -236,13 +230,13 @@ export class DayTwoScene {
         this.diceButton.eventMode = 'static';
         this.diceButton.cursor = 'pointer';
         this.container.addChild(this.diceButton);
-        // Place dice further to the right of roll button, smaller
+        // Place dice even further to the right of roll button, smaller
         const diceTexture = Assets.get('PAGE3_DICE');
         let diceSprite = null;
         if (diceTexture) {
             diceSprite = new Sprite(diceTexture);
             diceSprite.anchor.set(0.5);
-            diceSprite.x = this.diceButton.x + 110; // Further right
+            diceSprite.x = this.diceButton.x + 150; // Move dice further right
             diceSprite.y = this.diceButton.y;
             diceSprite.scale.set(0.45); // Smaller dice
             this.container.addChild(diceSprite);
@@ -265,122 +259,175 @@ export class DayTwoScene {
         });
     }
     async animateDiceRoll() {
-        console.log('[DayTwoScene] Animating dice roll');
-        const diceTexture = Assets.get('PAGE3_DICE');
-        if (!diceTexture)
-            return;
-        // Animate dice roll to the right of the button, smaller
-        const dice = new Sprite(diceTexture);
-        dice.anchor.set(0.5);
-        // Use same position as static dice
-        if (this.diceButton) {
-            dice.x = this.diceButton.x + 110;
-            dice.y = this.diceButton.y;
-        }
-        else {
-            dice.x = this.canvasWidth / 2 + 110;
-            dice.y = this.canvasHeight - 200;
-        }
-        dice.scale.set(0.5);
-        this.container.addChild(dice);
-        const spinDuration = 1500;
-        const startTime = Date.now();
-        await new Promise((resolve) => {
-            const animate = () => {
-                const elapsed = Date.now() - startTime;
-                const progress = elapsed / spinDuration;
-                dice.rotation = progress * Math.PI * 8;
-                dice.scale.set(1.5 + Math.sin(progress * Math.PI * 4) * 0.3);
-                if (elapsed < spinDuration) {
-                    requestAnimationFrame(animate);
-                }
-                else {
-                    resolve();
-                }
-            };
-            animate();
-        });
-        await new Promise((resolve) => {
-            const fadeStart = Date.now();
-            const fadeDuration = 300;
-            const animate = () => {
-                const elapsed = Date.now() - fadeStart;
-                const progress = Math.min(1, elapsed / fadeDuration);
-                dice.alpha = 1 - progress;
-                if (progress < 1) {
-                    requestAnimationFrame(animate);
-                }
-                else {
-                    this.container.removeChild(dice);
-                    resolve();
-                }
-            };
-            animate();
-        });
+        // Reuse DiceRollScene's dice roll animation
+        // Create a temporary DiceRollScene instance to use its animateDiceRoll method
+        const diceRollScene = new DiceRollScene();
+        diceRollScene.container = this.container;
+        diceRollScene.canvasWidth = this.canvasWidth;
+        diceRollScene.canvasHeight = this.canvasHeight;
+        diceRollScene.layeredSprites = this.layeredSprites;
+        await diceRollScene.animateDiceRoll();
     }
     async moveAvatarAlongPath() {
         console.log('[DayTwoScene] Moving avatar along path');
         if (!this.avatar)
             return;
-        for (let i = 1; i < this.pathPositions.length; i++) {
-            console.log(`[DayTwoScene] Moving avatar to position ${i}:`, this.pathPositions[i]);
-            await this.jumpToPosition(i);
-            console.log(`[DayTwoScene] Avatar now at: x=${this.avatar?.x}, y=${this.avatar?.y}`);
-            await this.wait(200);
+        // Hide dice when avatar starts moving and after movement
+        if (this.diceButton) {
+            this.container.removeChild(this.diceButton);
+            this.diceButton = null;
         }
-        // After avatar reaches end of path, show char asset and chat sequence, then token shop icon
+        // Banner keys for each move (change after landing)
+        const bannerKeys = ['BANNER_NO_26', 'BANNER_NO_27', 'BANNER_NO_28', 'BANNER_NO_29', 'BANNER_NO_30'];
+        for (let i = 1; i < this.pathPositions.length; i++) {
+            await this.jumpToPosition(i);
+            await this.wait(200);
+            // Change banner after landing
+            if (this.topBanner && bannerKeys[i - 1]) {
+                const newBannerTexture = Assets.get(bannerKeys[i - 1]);
+                if (newBannerTexture)
+                    this.topBanner.texture = newBannerTexture;
+            }
+            // Hide dice again in case it's still present
+            if (this.diceButton) {
+                this.container.removeChild(this.diceButton);
+                this.diceButton = null;
+            }
+        }
+        // After avatar reaches end of path, show character and coin assets, then chat sequence and token shop icon
         if (this.avatar && this.scrollContainer) {
-            // Show char asset at avatar position
-            const charTexture = Assets.get('PAGE3_CHAR');
+            // Show character asset (same as TokenShopScene)
+            const charTexture = Assets.get('PAGE6_CHAR');
             if (charTexture) {
                 const charSprite = new Sprite(charTexture);
-                charSprite.anchor.set(0.5, 1);
-                charSprite.scale.set(0.75);
-                charSprite.x = this.avatar.x;
-                charSprite.y = this.avatar.y;
-                this.scrollContainer.addChild(charSprite);
-                // Animate chat sequence
-                const chatKeys = ['PAGE6_CHAT_1', 'PAGE6_CHAT_2', 'PAGE6_CHAT_3'];
-                const chatSprites = [];
-                for (let i = 0; i < chatKeys.length; i++) {
-                    const chatTexture = Assets.get(chatKeys[i]);
-                    if (chatTexture) {
-                        const chatSprite = new Sprite(chatTexture);
-                        chatSprite.anchor.set(0, 1);
-                        chatSprite.x = charSprite.x + 60;
-                        chatSprite.y = charSprite.y - 40 - i * 40;
-                        chatSprite.alpha = 0;
-                        this.scrollContainer.addChild(chatSprite);
-                        chatSprites.push(chatSprite);
-                    }
+                charSprite.anchor.set(0, 1);
+                charSprite.x = 20;
+                charSprite.y = this.canvasHeight - 65;
+                charSprite.scale.set(1.4);
+                this.container.addChild(charSprite);
+                this.layeredSprites.push(charSprite);
+            }
+            // Show coin_collect at top right (hidden initially)
+            const coinTexture = Assets.get('COIN_COLLECT');
+            if (coinTexture) {
+                const coinCollect = new Sprite(coinTexture);
+                coinCollect.anchor.set(0.5);
+                coinCollect.x = this.canvasWidth - 120;
+                coinCollect.y = 150;
+                coinCollect.scale.set(1.7);
+                coinCollect.alpha = 0;
+                this.container.addChild(coinCollect);
+                this.layeredSprites.push(coinCollect);
+            }
+            // Use MessageScene's showMessageSequence logic for chat animation
+            const chatKeys = ['PAGE6_CHAT_1', 'PAGE6_CHAT_2', 'PAGE6_CHAT_3'];
+            const chatSprites = [];
+            // Helper functions for chat animation
+            const showMessage = async (assetKey, x, y, index) => {
+                const texture = Assets.get(assetKey);
+                if (texture) {
+                    const message = new Sprite(texture);
+                    message.anchor.set(0.5);
+                    message.x = x;
+                    message.y = y;
+                    message.alpha = 0;
+                    message.scale.set(0);
+                    this.container.addChild(message);
+                    chatSprites[index] = message;
+                    await popIn(message, 1.5);
                 }
-                // Animate chat bubbles appearing and moving up
-                for (let i = 0; i < chatSprites.length; i++) {
-                    await this.fadeIn(chatSprites[i], 400);
-                    // Move previous chats up and fade
-                    for (let j = 0; j < i; j++) {
-                        chatSprites[j].y -= 40;
-                        chatSprites[j].alpha = 0.5;
+            };
+            const popIn = async (sprite, targetScale = 1) => {
+                const duration = 250;
+                const startTime = Date.now();
+                return new Promise((resolve) => {
+                    const animate = () => {
+                        const elapsed = Date.now() - startTime;
+                        const progress = Math.min(1, elapsed / duration);
+                        sprite.alpha = Math.min(1, progress * 2);
+                        sprite.scale.set(Math.min(targetScale, progress * 1.5 * targetScale));
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        }
+                        else {
+                            sprite.alpha = 1;
+                            sprite.scale.set(targetScale);
+                            resolve();
+                        }
+                    };
+                    requestAnimationFrame(animate);
+                });
+            };
+            const bumpUpAndFade = async (index, spacing = 100) => {
+                const message = chatSprites[index];
+                if (!message)
+                    return;
+                const duration = 250;
+                const startTime = Date.now();
+                const startY = message.y;
+                const targetY = startY - spacing;
+                return new Promise((resolve) => {
+                    const animate = () => {
+                        const elapsed = Date.now() - startTime;
+                        const progress = Math.min(1, elapsed / duration);
+                        message.y = startY + (targetY - startY) * progress;
+                        message.alpha = 1 - (progress * 0.5);
+                        if (progress < 1) {
+                            requestAnimationFrame(animate);
+                        }
+                        else {
+                            resolve();
+                        }
+                    };
+                    requestAnimationFrame(animate);
+                });
+            };
+            // Show chat_1
+            await showMessage(chatKeys[0], this.canvasWidth / 2, this.canvasHeight / 2, 0);
+            await this.wait(600);
+            await bumpUpAndFade(0, 150);
+            // Show chat_2
+            await showMessage(chatKeys[1], this.canvasWidth / 2, this.canvasHeight / 2, 1);
+            await this.wait(600);
+            await bumpUpAndFade(0, 150);
+            await bumpUpAndFade(1, 150);
+            // Show chat_3
+            await showMessage(chatKeys[2], this.canvasWidth / 2, this.canvasHeight / 2, 2);
+            await this.wait(600);
+            // Hide dice asset when chat_3 appears
+            const diceTexture = Assets.get('PAGE3_DICE');
+            if (diceTexture) {
+                for (const sprite of this.layeredSprites) {
+                    if (sprite.texture === diceTexture) {
+                        this.container.removeChild(sprite);
                     }
-                    await this.wait(400);
                 }
             }
-            // After chat, show token shop icon with pulse at top right
-            const tokenShopTexture = Assets.get('PAGE3_TOKEN_SHOP_ICON');
+            // After chat_3, show token shop icon with pulse at top right, clickable and always visible
+            const tokenShopTexture = Assets.get('PAGE6_TOKEN_SHOP');
             if (tokenShopTexture) {
                 const icon = new Sprite(tokenShopTexture);
                 icon.anchor.set(1, 0);
-                icon.x = this.canvasWidth - 20;
-                icon.y = 20;
-                icon.scale.set(0.7);
-                this.container.addChild(icon);
+                // Center pulse and icon together
+                const pulseX = this.canvasWidth - 60;
+                const pulseY = 120 + 65 / 2; // Center pulse vertically
+                const iconX = pulseX + 40; // Move token_shop further right
+                const iconY = 120;
                 // Pulse animation (white circle behind icon)
                 const pulse = new Graphics();
-                pulse.circle(0, 0, 38);
+                pulse.zIndex = 999;
+                pulse.circle(0, 0, 65);
                 pulse.fill(0xFFFFFF, 0.3);
-                pulse.x = icon.x;
-                pulse.y = icon.y + 20;
+                pulse.x = pulseX;
+                pulse.y = pulseY;
                 this.container.addChild(pulse);
+                icon.x = iconX;
+                icon.y = iconY;
+                icon.scale.set(1.3);
+                icon.zIndex = 1000;
+                icon.eventMode = 'static';
+                icon.cursor = 'pointer';
+                this.container.addChild(icon);
                 let pulseScale = 1;
                 let pulseGrowing = true;
                 function animatePulse() {
@@ -398,10 +445,20 @@ export class DayTwoScene {
                     requestAnimationFrame(animatePulse);
                 }
                 animatePulse();
+                // Make icon clickable to navigate to token shop scene
+                icon.on('pointerdown', async () => {
+                    const sceneManager = window.sceneManager;
+                    if (sceneManager) {
+                        const { TokenShopScene } = await import('./TokenShopScene.js');
+                        await sceneManager.change(new TokenShopScene(), 'none');
+                    }
+                });
             }
-            // Wait before transitioning to token shop
-            await this.wait(1200);
-            await this.transitionToTokenShop();
+            // Hide dice after avatar finishes moving and when character appears
+            if (this.diceButton) {
+                this.container.removeChild(this.diceButton);
+                this.diceButton = null;
+            }
         }
     }
     async transitionToTokenShop() {
@@ -431,13 +488,15 @@ export class DayTwoScene {
                 const easeProgress = 1 - Math.pow(1 - progress, 3);
                 this.avatar.x = startX + (target.x - startX) * easeProgress;
                 this.avatar.y = startY + (target.y - startY) * easeProgress;
-                // Center scroll on avatar, always smoothly follow
+                const jumpHeight = 60;
+                const arc = Math.sin(progress * Math.PI) * jumpHeight;
+                this.avatar.y -= arc;
                 if (this.scrollContainer) {
                     const avatarScreenY = this.avatar.y + this.scrollContainer.y;
                     const targetScreenY = this.canvasHeight / 2;
                     const scrollOffset = avatarScreenY - targetScreenY;
                     // Use a higher smoothing factor for less jumpiness
-                    let newScrollY = this.scrollContainer.y - scrollOffset * 0.2;
+                    let newScrollY = this.scrollContainer.y - scrollOffset * 0.1;
                     newScrollY = Math.max(this.minY, Math.min(this.maxY, newScrollY));
                     this.scrollContainer.y = newScrollY;
                 }

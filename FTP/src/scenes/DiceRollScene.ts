@@ -4,11 +4,11 @@ import { ASSETS } from '../assets';
 
 export class DiceRollScene implements IScene {
   container = new Container();
-  private ready = false;
-  private isTransitioning = false;
-  private layeredSprites: Sprite[] = [];
-  private readonly canvasWidth = 572;
-  private readonly canvasHeight = 1247;
+  public ready = false;
+  public isTransitioning = false;
+  public layeredSprites: Sprite[] = [];
+  public canvasWidth = 572;
+  public canvasHeight = 1247;
   private avatar: Sprite | null = null;
   private spotlight: Graphics | null = null;
   private winText: Text | null = null;
@@ -251,7 +251,7 @@ export class DiceRollScene implements IScene {
     return new Promise(resolve => setTimeout(resolve, ms));
   }
   
-  private async animateDiceRoll() {
+  public async animateDiceRoll() {
     // Create a dice sprite (we'll rotate and scale it to simulate rolling)
     const diceTexture = Assets.get('PAGE3_DICE');
     if (!diceTexture) return;
