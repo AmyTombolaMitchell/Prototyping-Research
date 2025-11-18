@@ -411,7 +411,7 @@ export class DayTwoScene {
                 // Center pulse and icon together
                 const pulseX = this.canvasWidth - 60;
                 const pulseY = 120 + 65 / 2; // Center pulse vertically
-                const iconX = pulseX + 40; // Move token_shop further right
+                const iconX = pulseX + 80; // Move token_shop a bit more right
                 const iconY = 120;
                 // Pulse animation (white circle behind icon)
                 const pulse = new Graphics();
