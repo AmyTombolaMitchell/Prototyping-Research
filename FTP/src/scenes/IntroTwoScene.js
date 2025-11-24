@@ -169,14 +169,15 @@ export class IntroTwoScene {
         this.container.sortChildren();
         // Add BOTTOM_BANNER at the bottom (if present)
         // ...existing code...
-        // Add asset 7 (lady) from PAGE 1 - same position and size as page 1
+        // ...existing code for other sprites...
+        // Add asset 7 (lady) from PAGE 1 - same position and size as page 1, just before banners so she is not covered
         const ladyTexture = Assets.get('INTRO_7');
         if (ladyTexture) {
             const lady = new Sprite(ladyTexture);
             lady.anchor.set(0, 1);
-            lady.x = 50;
+            lady.x = 0;
             lady.y = this.canvasHeight - 63;
-            lady.scale.set(0.7);
+            lady.scale.set(1.3);
             this.container.addChild(lady);
             this.layeredSprites.push(lady);
         }
@@ -185,7 +186,7 @@ export class IntroTwoScene {
         if (asset3Texture) {
             const sprite = new Sprite(asset3Texture);
             sprite.anchor.set(0.5);
-            sprite.scale.set(0.7); // Smaller
+            sprite.scale.set(1.5); // Smaller
             sprite.x = this.canvasWidth / 2;
             sprite.y = this.canvasHeight / 2;
             this.container.addChild(sprite);

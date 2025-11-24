@@ -9,6 +9,7 @@ import { DayTwoScene } from './scenes/DayTwoScene';
 import { TokenShopScene } from './scenes/TokenShopScene';
 import { SuperSpinsScene } from './scenes/SuperSpinsScene';
 import { ThankYouScene } from './scenes/ThankYouScene';
+import { IntroSplashScene } from './scenes/IntroSplashScene';
 // Commented out for now
 // import { InstantWinScene } from './scenes/InstantWinScene';
 // import { FinishSequenceScene } from './scenes/FinishSequenceScene';
@@ -135,6 +136,7 @@ async function preload() {
   
   // Only load assets needed for PAGE 1 and PAGE 2
   const assetsToLoad = [
+    'BACKGROUND_intro',
     'INTRO_BG', 'INTRO_1', 'INTRO_2', 'INTRO_3', 'INTRO_4', 'INTRO_5', 
     'INTRO_6', 'INTRO_7', 'INTRO_8', 'INTRO_9', 'INTRO_10',
     'INTRO2_BG', 'INTRO2_1', 'INTRO2_2', 'INTRO2_3',
@@ -268,6 +270,7 @@ async function start() {
     updateProgress(currentProgress + 1, totalSteps, 'Initializing scene...');
     
     console.log('[START] Creating scenes');
+    const introSplashScene = new IntroSplashScene();
     const introScene = new IntroScene();
     const introTwoScene = new IntroTwoScene();
     const diceRollScene = new DiceRollScene();
@@ -278,6 +281,7 @@ async function start() {
     const superSpinsScene = new SuperSpinsScene();
     
     // Register all scenes
+    sceneManager.register('IntroSplashScene', introSplashScene);
     sceneManager.register('IntroScene', introScene);
     sceneManager.register('IntroTwoScene', introTwoScene);
     sceneManager.register('DiceRollScene', diceRollScene);
@@ -287,15 +291,15 @@ async function start() {
     sceneManager.register('TokenShopScene', tokenShopScene);
     sceneManager.register('SuperSpinsScene', superSpinsScene);
     
-    // Start from the beginning
-    console.log('[START] Starting from IntroScene');
+    // Start from the splash
+    console.log('[START] Starting from IntroSplashScene');
     
     // Update progress for scene change
     updateProgress(currentProgress + 2, totalSteps, 'Loading game...');
     
-    console.log('[START] Changing to IntroScene');
-    await sceneManager.change(introScene);
-    console.log('[START] IntroScene loaded, starting ticker');
+    console.log('[START] Changing to IntroSplashScene');
+    await sceneManager.change(introSplashScene);
+    console.log('[START] IntroSplashScene loaded, starting ticker');
     
     currentStep = 0;
     app.ticker.add(() => update());

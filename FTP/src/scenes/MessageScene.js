@@ -83,9 +83,9 @@ export class MessageScene {
         if (ladyTexture) {
             const lady = new Sprite(ladyTexture);
             lady.anchor.set(0, 1);
-            lady.x = 50;
+            lady.x = 0;
             lady.y = this.canvasHeight - 63;
-            lady.scale.set(0.7);
+            lady.scale.set(1.3);
             lady.alpha = 0;
             this.container.addChild(lady);
             this.layeredSprites.push(lady);
@@ -117,8 +117,8 @@ export class MessageScene {
         // Asset 1 - appears in the middle
         await this.showMessage('PAGE5_1', this.canvasWidth / 2, this.canvasHeight / 2, 0);
         await this.wait(600); // Reduced from 1000ms to 600ms
-        // Bump asset 1 up and fade it
-        await this.bumpUpAndFade(0, 150); // More spacing
+        // Bump asset 1 up and fade it (increase spacing for bigger gap)
+        await this.bumpUpAndFade(0, 210); // Increased spacing
         // Asset 2 - appears in the middle
         await this.showMessage('PAGE5_2', this.canvasWidth / 2, this.canvasHeight / 2, 1);
         await this.wait(600); // Reduced from 1000ms to 600ms
@@ -220,10 +220,19 @@ export class MessageScene {
             message.x = x;
             message.y = y;
             message.alpha = 0;
-            message.scale.set(0);
-            this.container.addChild(message);
-            this.messages[index] = message;
-            await this.popIn(message, 0.7); // Smaller scale for messages
+            // Make PAGE5_1 (index 0) bigger
+            if (index === 0) {
+                message.scale.set(0);
+                this.container.addChild(message);
+                this.messages[index] = message;
+                await this.popIn(message, 1.45); // Even larger scale for PAGE5_1
+            }
+            else {
+                message.scale.set(0);
+                this.container.addChild(message);
+                this.messages[index] = message;
+                await this.popIn(message, 0.7); // Default scale for others
+            }
         }
     }
     async popIn(sprite, targetScale = 1) {

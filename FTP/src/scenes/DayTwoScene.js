@@ -301,9 +301,12 @@ export class DayTwoScene {
             if (charTexture) {
                 const charSprite = new Sprite(charTexture);
                 charSprite.anchor.set(0, 1);
-                charSprite.x = 20;
-                charSprite.y = this.canvasHeight - 65;
-                charSprite.scale.set(1.4);
+                charSprite.x = 0; // Match page 1 lady x
+                charSprite.y = this.canvasHeight - 63; // Match page 1 lady y
+                charSprite.scale.set(1.3); // Match page 1 lady scale
+                // Remove from scrollContainer if present, add to main container for fixed overlay effect
+                if (charSprite.parent)
+                    charSprite.parent.removeChild(charSprite);
                 this.container.addChild(charSprite);
                 this.layeredSprites.push(charSprite);
             }

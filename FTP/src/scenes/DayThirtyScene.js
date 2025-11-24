@@ -103,9 +103,9 @@ export class DayThirtyScene {
     this.sideCharacter = new Sprite(charTexture);
     this.sideCharacter.anchor.set(0, 1);
     this.sideCharacter.x = 0;
-    this.sideCharacter.y = this.canvasHeight - 145;
+    this.sideCharacter.y = this.canvasHeight - 63;
     this.sideCharacter.alpha = 0;
-    this.sideCharacter.scale.set(1.0);
+    this.sideCharacter.scale.set(1.3);
     this.container.addChild(this.sideCharacter);
 
     await this.fadeIn(this.sideCharacter, 450);
@@ -442,9 +442,9 @@ export class DayThirtyScene {
       this.sideCharacter = new Sprite(charTexture);
       this.sideCharacter.anchor.set(0, 1);
       this.sideCharacter.x = 0;
-      this.sideCharacter.y = this.canvasHeight - 145;
+      this.sideCharacter.y = this.canvasHeight - 63;
       this.sideCharacter.alpha = 0;
-      this.sideCharacter.scale.set(1.0);
+      this.sideCharacter.scale.set(1.3);
       this.container.addChild(this.sideCharacter);
       await this.fadeIn(this.sideCharacter, 450);
     }

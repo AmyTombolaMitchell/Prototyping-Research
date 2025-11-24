@@ -2,6 +2,7 @@
 // Updated: Banner assets added
 
 export const ASSETS = {
+    BACKGROUND_intro: 'page1/BACKGROUND_intro.png',
   // Removed legacy FTP_DICE_ROLL_1 and FTP_DICE_ROLL_2 in favor of PAGE 1 and PAGE 2 layered intro assets
   FTP_DICE_ROLL_1: 'FTP_DICE_ROLL_1.png',
   FTP_DICE_ROLL_2: 'FTP_DICE_ROLL_2.png',

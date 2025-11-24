@@ -42,6 +42,21 @@ export class IntroScene {
         console.log('[IntroScene] init() called - BEFORE try block');
         // Make container interactive to allow child events
         this.container.eventMode = 'static';
+        // Show BACKGROUND_intro splash before anything else
+        const splashTexture = Assets.get('BACKGROUND_intro');
+        let splash = null;
+        if (splashTexture) {
+            splash = new Sprite(splashTexture);
+            splash.anchor.set(0.5);
+            splash.x = this.canvasWidth / 2;
+            splash.y = this.canvasHeight / 2;
+            this.container.addChild(splash);
+            // Wait 2 seconds
+            await new Promise(res => setTimeout(res, 2000));
+            this.container.removeChild(splash);
+            splash.destroy();
+            splash = null;
+        }
         try {
             console.log('[IntroScene] Starting init - INSIDE try block');
             // First add the background
@@ -123,9 +138,9 @@ export class IntroScene {
             if (ladyTexture) {
                 const lady = new Sprite(ladyTexture);
                 lady.anchor.set(0, 1);
-                lady.x = 50;
+                lady.x = 0; // Moved just a tiny bit more to the left
                 lady.y = this.canvasHeight - 63;
-                lady.scale.set(0.7);
+                lady.scale.set(1.3); // Increased from 1.0 to 1.3
                 lady.alpha = 0;
                 this.container.addChild(lady);
                 this.layeredSprites.push(lady);
@@ -179,7 +194,7 @@ export class IntroScene {
             if (asset3Texture) {
                 const sprite = new Sprite(asset3Texture);
                 sprite.anchor.set(0.5);
-                sprite.scale.set(0.75);
+                sprite.scale.set(1.5); // Match asset 2 size
                 sprite.x = this.canvasWidth - 150;
                 sprite.y = 450;
                 this.container.addChild(sprite);
@@ -192,7 +207,7 @@ export class IntroScene {
             if (asset4Texture) {
                 asset4Sprite = new Sprite(asset4Texture);
                 asset4Sprite.anchor.set(0.5);
-                asset4Sprite.scale.set(0.75);
+                asset4Sprite.scale.set(1.5); // Match asset 2 size
                 asset4Sprite.x = (this.canvasWidth / 2) - 80;
                 asset4Sprite.y = 620;
                 this.container.addChild(asset4Sprite);
@@ -205,7 +220,7 @@ export class IntroScene {
             if (asset5Tex) {
                 asset5Sprite = new Sprite(asset5Tex);
                 asset5Sprite.anchor.set(0.5);
-                asset5Sprite.scale.set(0.75);
+                asset5Sprite.scale.set(1.5); // Match asset 2 size
                 asset5Sprite.x = this.canvasWidth - 120;
                 asset5Sprite.y = 700;
                 this.container.addChild(asset5Sprite);

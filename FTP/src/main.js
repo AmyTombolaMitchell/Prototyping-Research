@@ -8,6 +8,7 @@ import { MessageScene } from './scenes/MessageScene';
 import { DayTwoScene } from './scenes/DayTwoScene';
 import { TokenShopScene } from './scenes/TokenShopScene';
 import { SuperSpinsScene } from './scenes/SuperSpinsScene';
+import { IntroSplashScene } from './scenes/IntroSplashScene';
 // Commented out for now
 // import { InstantWinScene } from './scenes/InstantWinScene';
 // import { FinishSequenceScene } from './scenes/FinishSequenceScene';
@@ -108,6 +109,7 @@ console.log('[INIT] Starting application...');
         console.log('[preload] Starting asset loading now...');
         // Only load assets needed for PAGE 1 and PAGE 2
         const assetsToLoad = [
+            'BACKGROUND_intro',
             'INTRO_BG', 'INTRO_1', 'INTRO_2', 'INTRO_3', 'INTRO_4', 'INTRO_5',
             'INTRO_6', 'INTRO_7', 'INTRO_8', 'INTRO_9', 'INTRO_10',
             'INTRO2_BG', 'INTRO2_1', 'INTRO2_2', 'INTRO2_3',
@@ -229,6 +231,7 @@ console.log('[INIT] Starting application...');
             // Update progress for scene initialization
             updateProgress(currentProgress + 1, totalSteps, 'Initializing scene...');
             console.log('[START] Creating scenes');
+            const introSplashScene = new IntroSplashScene();
             const introScene = new IntroScene();
             const introTwoScene = new IntroTwoScene();
             const diceRollScene = new DiceRollScene();
@@ -238,6 +241,7 @@ console.log('[INIT] Starting application...');
             const tokenShopScene = new TokenShopScene();
             const superSpinsScene = new SuperSpinsScene();
             // Register all scenes
+            sceneManager.register('IntroSplashScene', introSplashScene);
             sceneManager.register('IntroScene', introScene);
             sceneManager.register('IntroTwoScene', introTwoScene);
             sceneManager.register('DiceRollScene', diceRollScene);
@@ -246,13 +250,13 @@ console.log('[INIT] Starting application...');
             sceneManager.register('DayTwoScene', dayTwoScene);
             sceneManager.register('TokenShopScene', tokenShopScene);
             sceneManager.register('SuperSpinsScene', superSpinsScene);
-            // Start from the beginning
-            console.log('[START] Starting from IntroScene');
+            // Start from the splash
+            console.log('[START] Starting from IntroSplashScene');
             // Update progress for scene change
             updateProgress(currentProgress + 2, totalSteps, 'Loading game...');
-            console.log('[START] Changing to IntroScene');
-            await sceneManager.change(introScene);
-            console.log('[START] IntroScene loaded, starting ticker');
+            console.log('[START] Changing to IntroSplashScene');
+            await sceneManager.change(introSplashScene);
+            console.log('[START] IntroSplashScene loaded, starting ticker');
             currentStep = 0;
             app.ticker.add(() => update());
             // Wait for multiple frames to ensure scene is fully rendered

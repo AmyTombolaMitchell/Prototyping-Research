@@ -88,13 +88,12 @@ export class MessageTwoScene {
     if (charTexture) {
       const charSprite = new Sprite(charTexture);
       charSprite.anchor.set(0, 1);
-      charSprite.x = 20;
-      charSprite.y = this.canvasHeight - 65;
-      charSprite.scale.set(1.4);
+      charSprite.x = 0;
+      charSprite.y = this.canvasHeight - 63;
+      charSprite.scale.set(1.3);
       charSprite.alpha = 0;
       this.container.addChild(charSprite);
       this.layeredSprites.push(charSprite);
-      
       // Fade in character
       await this.fadeIn(charSprite, 500);
     }

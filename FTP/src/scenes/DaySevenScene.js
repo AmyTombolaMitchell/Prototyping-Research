@@ -331,12 +331,11 @@ export class DaySevenScene {
     if (charTexture) {
       this.charSprite = new Sprite(charTexture);
       this.charSprite.anchor.set(0, 1);
-      this.charSprite.x = 20;
-      this.charSprite.y = this.canvasHeight - 65;
-      this.charSprite.scale.set(1.4);
+      this.charSprite.x = 0;
+      this.charSprite.y = this.canvasHeight - 63;
+      this.charSprite.scale.set(1.3);
       this.charSprite.alpha = 0;
       this.container.addChild(this.charSprite);
-      
       // Fade in character
       await this.fadeIn(this.charSprite, 500);
     } else {
