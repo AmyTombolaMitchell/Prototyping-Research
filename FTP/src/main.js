@@ -117,7 +117,8 @@ console.log('[INIT] Starting application...');
             'PAGE4_BG', 'PAGE4_LOGO', 'PAGE4_SUPERSPINS', 'PAGE4_SUPERSPINSLOGOSMALL',
             'PAGE4_WHEEL', 'PAGE4_WHEELBACKGROUND', 'PAGE4_COINS',
             'PAGE5_1', 'PAGE5_2', 'PAGE5_3', 'PAGE5_4', 'PAGE5_5',
-            'PAGE6_LONG_BACKGROUND', 'PAGE6_BOTTOM_BANNER', 'PAGE6_CHAR', 'PAGE6_CHAT_1', 'PAGE6_CHAT_2', 'PAGE6_CHAT_3', 'PAGE6_TOKEN_SHOP'
+            'PAGE6_LONG_BACKGROUND', 'PAGE6_BOTTOM_BANNER', 'PAGE6_CHAR', 'PAGE6_CHAT_1', 'PAGE6_CHAT_2', 'PAGE6_CHAT_3', 'PAGE6_TOKEN_SHOP',
+            'CHAT_PAUSE'
         ];
         const totalSteps = assetsToLoad.length + 2; // assets + scene init + scene change
         let currentProgress = 0;

@@ -132,6 +132,8 @@ export class DayTwoScene {
         this.currentPosition = lastPosition;
     }
     async init() {
+        // Preload chat pause asset to ensure it is in the cache
+        await Assets.load('CHAT_PAUSE');
         console.log('[DayTwoScene] Init: canvas', this.canvasWidth, this.canvasHeight);
         console.log('[DayTwoScene] Starting init');
         this.container.removeChildren();
@@ -282,6 +284,7 @@ export class DayTwoScene {
         for (let i = 1; i < this.pathPositions.length; i++) {
             await this.jumpToPosition(i);
             await this.wait(200);
+            // Removed chat_pause and char pause logic
             // Change banner after landing
             if (this.topBanner && bannerKeys[i - 1]) {
                 const newBannerTexture = Assets.get(bannerKeys[i - 1]);

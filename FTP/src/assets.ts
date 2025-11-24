@@ -58,6 +58,7 @@ export const ASSETS = {
   PAGE6_CHAT_2: 'page6/chat_2.png',
   PAGE6_CHAT_3: 'page6/chat_3.png',
   PAGE6_TOKEN_SHOP: 'page6/token_shop.png',
+  CHAT_PAUSE: 'page6/chat_pause.png',
   // PAGE 7 assets for token shop scene
   PAGE7_LONG_BACKGROUND_SHOP: 'page7/LONG_BACKGROUND_SHOP.png',
   PAGE7_SHOP_1: 'page7/shop_1.png',

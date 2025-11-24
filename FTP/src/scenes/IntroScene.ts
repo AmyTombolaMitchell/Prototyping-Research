@@ -253,6 +253,7 @@ export class IntroScene implements IScene {
       if (page5Asset4 && page5Asset5 && asset6Sprite && asset4Sprite && asset5Sprite) {
         // Wait a bit longer to ensure all pop-ins are visually complete
         await new Promise(res => setTimeout(res, 600));
+        // No chat_pause or char shown here anymore
         asset6Sprite.eventMode = 'static';
         asset6Sprite.cursor = 'pointer';
         asset6Sprite.on('pointerdown', async () => {
@@ -278,6 +279,42 @@ export class IntroScene implements IScene {
       console.error('[IntroScene] Error in init():', error);
       this.ready = true; // Mark as ready even on error to prevent hanging
     }
+  }
+
+  // Show chat_pause and char together, then remove after pause
+  private async showChatPauseAndChar(): Promise<void> {
+    const chatPauseTexture = Assets.get('CHAT_PAUSE');
+    const charTexture = Assets.get('PAGE6_CHAR');
+    if (!chatPauseTexture || !charTexture) {
+      console.warn('[IntroScene] chat_pause or PAGE6_CHAR asset not found!');
+      return;
+    }
+    // Create and position PAGE6_CHAR sprite (same as on page 6)
+    const charSprite = new Sprite(charTexture);
+    charSprite.anchor.set(0, 1);
+    charSprite.x = 0;
+    charSprite.y = this.canvasHeight - 63;
+    charSprite.scale.set(1.3);
+    charSprite.alpha = 1;
+    // Create and position chat_pause sprite (centered, larger)
+    const chatPause = new Sprite(chatPauseTexture);
+    chatPause.anchor.set(0.5);
+    chatPause.x = this.canvasWidth / 2;
+    chatPause.y = this.canvasHeight / 2;
+    chatPause.alpha = 1;
+    chatPause.scale.set(1.5);
+    // Add both sprites to container
+    this.container.addChild(charSprite);
+    this.container.addChild(chatPause);
+    this.container.setChildIndex(charSprite, this.container.children.length - 2);
+    this.container.setChildIndex(chatPause, this.container.children.length - 1);
+    console.log('[IntroScene] Showing chat_pause and char sprites');
+    await new Promise(res => setTimeout(res, 3200));
+    this.container.removeChild(chatPause);
+    this.container.removeChild(charSprite);
+    chatPause.destroy();
+    charSprite.destroy();
+    console.log('[IntroScene] chat_pause and char sprites removed, resuming movement');
   }
 
   update() {}

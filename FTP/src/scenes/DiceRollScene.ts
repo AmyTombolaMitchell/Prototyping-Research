@@ -100,6 +100,39 @@ export class DiceRollScene implements IScene {
     for (let i = 1; i < this.pathPositions.length; i++) {
       await this.jumpToPosition(i);
       this.updateBanner(i); // Update banner when landing on each position
+      if (i === 1) {
+        // Show chat_pause and char after moving to first space
+        const chatPauseTexture = Assets.get('CHAT_PAUSE');
+        const charTexture = Assets.get('PAGE6_CHAR');
+        if (chatPauseTexture && charTexture) {
+          // Create and position PAGE6_CHAR sprite (same as on page 6)
+          const charSprite = new Sprite(charTexture);
+          charSprite.anchor.set(0, 1);
+          charSprite.x = 0;
+          charSprite.y = this.canvasHeight - 63;
+          charSprite.scale.set(1.3);
+          charSprite.alpha = 1;
+          // Create and position chat_pause sprite (centered, larger)
+          const chatPause = new Sprite(chatPauseTexture);
+          chatPause.anchor.set(0.5);
+          chatPause.x = this.canvasWidth / 2;
+          chatPause.y = this.canvasHeight / 2;
+          chatPause.alpha = 1;
+          chatPause.scale.set(1.5);
+          // Add both sprites to container
+          this.container.addChild(charSprite);
+          this.container.addChild(chatPause);
+          this.container.setChildIndex(charSprite, this.container.children.length - 2);
+          this.container.setChildIndex(chatPause, this.container.children.length - 1);
+          console.log('[DiceRollScene] Showing chat_pause and char sprites');
+          await this.wait(3200);
+          this.container.removeChild(chatPause);
+          this.container.removeChild(charSprite);
+          chatPause.destroy();
+          charSprite.destroy();
+          console.log('[DiceRollScene] chat_pause and char sprites removed, resuming movement');
+        }
+      }
       await this.wait(200); // Reduced from 450ms to 200ms
     }
   }
