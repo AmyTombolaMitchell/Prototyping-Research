@@ -116,18 +116,18 @@ export class MessageScene {
     async showMessageSequence() {
         // Asset 1 - appears in the middle
         await this.showMessage('PAGE5_1', this.canvasWidth / 2, this.canvasHeight / 2, 0);
-        await this.wait(600); // Reduced from 1000ms to 600ms
+        await this.wait(1200); // Increased delay for slower appearance
         // Bump asset 1 up and fade it (increase spacing for bigger gap)
         await this.bumpUpAndFade(0, 210); // Increased spacing
         // Asset 2 - appears in the middle
         await this.showMessage('PAGE5_2', this.canvasWidth / 2, this.canvasHeight / 2, 1);
-        await this.wait(600); // Reduced from 1000ms to 600ms
+        await this.wait(1200); // Increased delay for slower appearance
         // Bump asset 1 and 2 up and fade
         await this.bumpUpAndFade(0, 150);
         await this.bumpUpAndFade(1, 150);
         // Asset 3 - appears in the middle
         await this.showMessage('PAGE5_3', this.canvasWidth / 2, this.canvasHeight / 2, 2);
-        await this.wait(600); // Reduced from 1000ms to 600ms
+        await this.wait(1200); // Increased delay for slower appearance
         // Assets 4 and 5 appear simultaneously
         const asset5Texture = Assets.get('PAGE5_5');
         const asset4Texture = Assets.get('PAGE5_4');
@@ -236,7 +236,7 @@ export class MessageScene {
         }
     }
     async popIn(sprite, targetScale = 1) {
-        const duration = 250; // milliseconds (reduced from 333ms to 250ms)
+        const duration = 500; // milliseconds (slowed down for smoother pop-in)
         const startTime = Date.now();
         return new Promise((resolve) => {
             const animate = () => {
@@ -260,7 +260,7 @@ export class MessageScene {
         const message = this.messages[index];
         if (!message)
             return;
-        const duration = 250; // milliseconds (reduced from 333ms to 250ms)
+        const duration = 500; // milliseconds (slowed down for smoother bump/fade)
         const startTime = Date.now();
         const startY = message.y;
         const targetY = startY - spacing; // Bump up by spacing amount

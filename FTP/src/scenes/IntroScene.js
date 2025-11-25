@@ -260,8 +260,7 @@ export class IntroScene {
             if (page5Asset4 && page5Asset5 && asset6Sprite && asset4Sprite && asset5Sprite) {
                 // Wait a bit longer to ensure all pop-ins are visually complete
                 await new Promise(res => setTimeout(res, 600));
-                // Simulate "move to space one after dice roll" here:
-                await this.showChatPauseAndChar();
+                // No chat_pause or char shown here anymore
                 asset6Sprite.eventMode = 'static';
                 asset6Sprite.cursor = 'pointer';
                 asset6Sprite.on('pointerdown', async () => {
