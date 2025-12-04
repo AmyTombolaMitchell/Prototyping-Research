@@ -250,23 +250,30 @@ export class IntroScene implements IScene {
       const page5Asset4 = Assets.get('PAGE5_4');
       const page5Asset5 = Assets.get('PAGE5_5');
       const self = this;
+      
+      // Helper function to transition to Day Two
+      const transitionToDayTwo = async () => {
+        if (self.isTransitioning) return;
+        self.isTransitioning = true;
+        if (asset6Sprite) {
+          asset6Sprite.eventMode = 'none';
+          asset6Sprite.cursor = 'default';
+        }
+        console.log('[IntroScene] Transitioning to PAGE 2 (Day Two)...');
+        const sceneManager = (window as any).sceneManager;
+        if (sceneManager) {
+          const { IntroTwoScene } = await import('./IntroTwoScene');
+          await sceneManager.change(new IntroTwoScene(), 'none');
+        }
+      };
+      
       if (page5Asset4 && page5Asset5 && asset6Sprite && asset4Sprite && asset5Sprite) {
         // Wait a bit longer to ensure all pop-ins are visually complete
         await new Promise(res => setTimeout(res, 600));
-        // No chat_pause or char shown here anymore
         asset6Sprite.eventMode = 'static';
         asset6Sprite.cursor = 'pointer';
         asset6Sprite.on('pointerdown', async () => {
-          if (self.isTransitioning) return; // Prevent double-click
-          self.isTransitioning = true;
-          asset6Sprite.eventMode = 'none';
-          asset6Sprite.cursor = 'default';
-          console.log('[IntroScene] Asset 6 clicked! Transitioning to PAGE 2...');
-          const sceneManager = (window as any).sceneManager;
-          if (sceneManager) {
-            const { IntroTwoScene } = await import('./IntroTwoScene');
-            await sceneManager.change(new IntroTwoScene(), 'none');
-          }
+          await transitionToDayTwo();
         });
       }
     console.log('[IntroScene] All sprites added, total:', this.layeredSprites.length);

@@ -17,35 +17,38 @@ export class IntroTwoScene implements IScene {
     console.log('[IntroTwoScene] Starting init');
 
     // Helper to animate pop/bounce for elements (same as page 1)
-    const popIn = (sprite: Sprite) => {
-      sprite.alpha = 0;
-      const originalScale = sprite.scale.x;
-      sprite.scale.set(0);
-      let frame = 0;
-      const animate = () => {
-        frame++;
-        sprite.alpha = Math.min(1, sprite.alpha + 0.05);
+    const popIn = (sprite: Sprite): Promise<void> => {
+      return new Promise((resolve) => {
+        sprite.alpha = 0;
+        const originalScale = sprite.scale.x;
+        sprite.scale.set(0);
+        let frame = 0;
+        const animate = () => {
+          frame++;
+          sprite.alpha = Math.min(1, sprite.alpha + 0.05);
 
-        // Bounce effect - overshoot then settle
-        const progress = frame / 50;
-        let scale;
-        if (progress < 0.5) {
-          scale = originalScale * (progress * 2.4);
-        } else if (progress < 0.75) {
-          scale = originalScale * (1.2 - (progress - 0.5) * 0.8);
-        } else {
-          scale = originalScale * (1.0 + (1.0 - progress) * 0.2);
-        }
+          // Bounce effect - overshoot then settle
+          const progress = frame / 50;
+          let scale;
+          if (progress < 0.5) {
+            scale = originalScale * (progress * 2.4);
+          } else if (progress < 0.75) {
+            scale = originalScale * (1.2 - (progress - 0.5) * 0.8);
+          } else {
+            scale = originalScale * (1.0 + (1.0 - progress) * 0.2);
+          }
 
-        sprite.scale.set(scale);
+          sprite.scale.set(scale);
 
-        if (frame < 50) {
-          requestAnimationFrame(animate);
-        } else {
-          sprite.scale.set(originalScale);
-        }
-      };
-      requestAnimationFrame(animate);
+          if (frame < 50) {
+            requestAnimationFrame(animate);
+          } else {
+            sprite.scale.set(originalScale);
+            resolve();
+          }
+        };
+        requestAnimationFrame(animate);
+      });
     };
 
     // Use PAGE 1 background
@@ -152,7 +155,7 @@ export class IntroTwoScene implements IScene {
       sprite.y = this.canvasHeight / 2;
       this.container.addChild(sprite);
       this.layeredSprites.push(sprite);
-      popIn(sprite);
+      await popIn(sprite);
       await new Promise(res => setTimeout(res, 500));
     }
 
@@ -170,34 +173,40 @@ export class IntroTwoScene implements IScene {
       sprite.y = this.canvasHeight - 170; // Moved down a bit
       this.asset2Sprite = sprite;
 
-      // Make it interactive/clickable
-      sprite.eventMode = 'static';
-      sprite.cursor = 'pointer';
-      sprite.on('pointerdown', async () => {
-        if (this.isTransitioning) return; // Prevent double-click
-        this.isTransitioning = true;
-
-        // Disable button immediately
+      const self = this;
+      const transitionToDayTwo = async () => {
+        if (self.isTransitioning) return;
+        self.isTransitioning = true;
         sprite.eventMode = 'none';
         sprite.cursor = 'default';
-
-        console.log('[IntroTwoScene] Roll button clicked! Transitioning to PAGE 3...');
+        console.log('[IntroTwoScene] Transitioning to Day Two (PAGE 3)...');
         const sceneManager = (window as any).sceneManager;
         if (sceneManager) {
           const { DiceRollScene } = await import('./DiceRollScene');
           await sceneManager.change(new DiceRollScene(), 'none');
         }
+      };
+
+      // Make it interactive/clickable
+      sprite.eventMode = 'static';
+      sprite.cursor = 'pointer';
+      sprite.on('pointerdown', async () => {
+        console.log('[IntroTwoScene] Roll button clicked manually!');
+        await transitionToDayTwo();
       });
 
       this.container.addChild(sprite);
       this.layeredSprites.push(sprite);
-      popIn(sprite);
+      await popIn(sprite);
       await new Promise(res => setTimeout(res, 500));
+      
+      // Re-enable interaction AFTER animations complete
+      sprite.eventMode = 'static';
+      sprite.cursor = 'pointer';
     }
 
     console.log('[IntroTwoScene] All sprites added, total:', this.layeredSprites.length);
-    // Wait before marking ready
-    await new Promise(res => setTimeout(res, 1000));
+    // Mark ready immediately
     this.ready = true;
     console.log('[IntroTwoScene] Marked as ready');
   }

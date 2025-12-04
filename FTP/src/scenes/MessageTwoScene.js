@@ -286,9 +286,23 @@ export class MessageTwoScene {
       asset.cursor = 'pointer';
       asset.on('pointerdown', () => this.handleContinue());
     }
+    
+    // Auto-transition after 3 seconds if user doesn't click
+    console.log('[MessageTwoScene] Starting 3 second countdown for auto-transition to Day Seven...');
+    this.autoTransitionTimer = setTimeout(() => {
+      console.log('[MessageTwoScene] 3 seconds elapsed, auto-transitioning to Day Seven...');
+      this.handleContinue();
+    }, 3000);
+    console.log('[MessageTwoScene] Auto-transition timer set');
   }
 
   async handleContinue() {
+    // Clear the auto-transition timer if it exists
+    if (this.autoTransitionTimer) {
+      clearTimeout(this.autoTransitionTimer);
+      this.autoTransitionTimer = null;
+    }
+    
     console.log('[MessageTwoScene] Player clicked to continue - navigating to Day Seven transition');
     const sceneManager = window.sceneManager;
     if (sceneManager) {

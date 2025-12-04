@@ -178,6 +178,19 @@ export class MessageScene implements IScene {
         });
       }
     }
+    
+    // Auto-transition after 3 seconds if user doesn't click
+    console.log('[MessageScene] Starting 3 second countdown for auto-transition to Day Two...');
+    setTimeout(() => {
+      console.log('[MessageScene] 3 seconds elapsed, checking transition status...');
+      if (!this.isTransitioning) {
+        console.log('[MessageScene] Auto-transitioning to Day Two...');
+        this.transitionToDayTwo();
+      } else {
+        console.log('[MessageScene] Already transitioning, skipping auto-transition');
+      }
+    }, 3000);
+    console.log('[MessageScene] Auto-transition timer set');
   }
 
   private async transitionToDayTwo() {
